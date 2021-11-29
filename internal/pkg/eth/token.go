@@ -16,9 +16,9 @@ var ETHToken = &Token{
 
 type Token struct {
 	Name               string   `json:"name"`
-	Symbol             string   `json:"symbol"`
-	Address            Address  `json:"address"`
-	Decimals           uint64   `json:"decimals"`
+	Symbol   string  `json:"symbol"`
+	Address  Address `json:"address"`
+	Decimals uint64  `json:"decimals"`
 	TotalSupply        *big.Int `json:"total_supply"`
 	IsEmptyName        bool     `json:"-"`
 	IsEmptyDecimal     bool     `json:"-"`

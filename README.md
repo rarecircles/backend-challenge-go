@@ -1,5 +1,18 @@
 # RareCircles Coding Challenge
 
+## Instructions
+
+- Clone the repository.
+- Checkout the `backend-challenge` branch.
+- Open your terminal.
+- Go to the repository folder.
+- Do 
+```
+  make netsetup
+  make all
+```
+- Access the API on `http://0.0.0.0:1234/v1/tokens?q=<search-term>`
+
 ## Requirements
 
 Design an API endpoint that provides token information based on token title.

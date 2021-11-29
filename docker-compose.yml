@@ -1,0 +1,66 @@
+version: "3.7"
+services:
+  challenge:
+    environment:
+      - HTTP_PORT=1234
+      - RPC_CURL=https://eth-mainnet.alchemyapi.io/v2/
+      - RPC_TOKEN=8XUZRXDW5tbki3JME_DWAsW3D1aGvXg1
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - rarecircles
+    build:
+      context: .
+      target: app
+      dockerfile: Dockerfile
+    ports:
+      - "1234:1234"
+    restart: always
+    volumes:
+      - ./:/go/src/github.com/jose-camilo/backend-challenge-go
+    depends_on:
+      - elasticsearch
+
+  elasticsearch:
+    networks:
+      - rarecircles
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.4.0
+    container_name: elasticsearch
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+      - cluster.routing.allocation.disk.threshold_enabled=false
+      - search.allow_expensive_queries=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+      - 9300:9300
+
+#  kibana:
+#    networks:
+#      - rarecircles
+#    container_name: kibana
+#    image: docker.elastic.co/kibana/kibana:7.4.0
+#    environment:
+#      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+#    ports:
+#      - 5601:5601
+#    depends_on:
+#      - elasticsearch
+
+networks:
+  rarecircles:
+    external:
+      name: rarecircles
+volumes:
+  elasticsearch-data:
+    driver: local
