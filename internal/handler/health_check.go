@@ -10,6 +10,5 @@ import (
 // HealthCheck health check route
 func (h *Handlers) HealthCheck(ctx echo.Context) error {
 	res := &echo.Map{"status": "OK"}
-
 	return ctx.JSON(http.StatusOK, res)
 }

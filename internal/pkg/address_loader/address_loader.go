@@ -12,18 +12,18 @@ type AddressLoader interface {
 
 type AddressLoaderImpl struct {
 	outputChan chan string
-	zLog *zap.Logger
+	zLog       *zap.Logger
 }
 
 func NewAddressLoader(output chan string, logger *zap.Logger) AddressLoader {
 	return &AddressLoaderImpl{
 		outputChan: output,
-		zLog: logger,
+		zLog:       logger,
 	}
 }
 
 func (ad AddressLoaderImpl) LoadAddressFile() error {
-	filePath := "data/addresses.jsonl"
+	filePath := os.Getenv("ADDRESS_FILE_PATH")
 
 	f, err := os.Open(filePath)
 	if err != nil {

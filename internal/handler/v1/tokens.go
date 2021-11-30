@@ -11,7 +11,7 @@ import (
 )
 
 type Handlers struct {
-	Logger *zap.Logger
+	Logger       *zap.Logger
 	SearchEngine search_engine.SearchEngine
 }
 type apiResponse map[string]interface{}
@@ -20,12 +20,38 @@ type TokenResponseArray []model.TokenDTO
 func (hv1 *Handlers) Tokens(ctx echo.Context) error {
 
 	queryString := ctx.QueryParam("q")
-	tokensSearchResponse, err := hv1.SearchEngine.Search(context.Background(), queryString, "","")
+	tokensSearchResponse, err := hv1.SearchEngine.Search(context.Background(), queryString, "", "")
 	if err != nil {
 		return err
 	}
 
 	return ctx.JSON(http.StatusOK, apiResponse{
-		"tokesn": tokensSearchResponse,
+		"tokens": tokensSearchResponse,
+	})
+}
+
+func (hv1 *Handlers) Symbols(ctx echo.Context) error {
+
+	queryString := ctx.QueryParam("q")
+	symbolsSearchResponse, err := hv1.SearchEngine.Search(context.Background(), "", queryString, "")
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, apiResponse{
+		"tokens": symbolsSearchResponse,
+	})
+}
+
+func (hv1 *Handlers) Addresses(ctx echo.Context) error {
+
+	queryString := ctx.QueryParam("q")
+	addressesSearchResponse, err := hv1.SearchEngine.Search(context.Background(), "", "", queryString)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, apiResponse{
+		"tokens": addressesSearchResponse,
 	})
 }

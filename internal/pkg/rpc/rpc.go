@@ -38,7 +38,6 @@ func NewClient(url string, opts ...Option) *Client {
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // <--- Problem
 	}
 	c.httpClient = &http.Client{Transport: tr}
-	//c.httpClient = http.DefaultClient
 
 	for _, opt := range opts {
 		opt(c)

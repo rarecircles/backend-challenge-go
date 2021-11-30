@@ -112,7 +112,7 @@ func (es *SearchEngineImpl) Search(ctx context.Context, name string, symbol stri
 			},
 		})
 	}
-	es.zLog.Info("var query map[string]interface{}")
+
 	var query map[string]interface{}
 
 	if len(should) > 1 {

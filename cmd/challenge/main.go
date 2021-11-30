@@ -60,13 +60,16 @@ func main() {
 		zLog.Fatal(err.Error())
 	}
 
-	//
+	// Indexing search engine
 	go func() {
 		for tokenData := range tokenDataChannel {
-			err := searchEngine.Index(context.Background(), tokenData)
+			err = searchEngine.Index(context.Background(), tokenData)
 			if err != nil {
 				zLog.Fatal(err.Error())
 			}
+		}
+		if err == nil {
+			zLog.Info("------------------ DONE INDEXING!!! ------------------")
 		}
 	}()
 

@@ -6,6 +6,7 @@ services:
       - RPC_CURL=https://eth-mainnet.alchemyapi.io/v2/
       - RPC_TOKEN=8XUZRXDW5tbki3JME_DWAsW3D1aGvXg1
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ADDRESS_FILE_PATH=data/addresses.jsonl
     networks:
       - rarecircles
     build:
@@ -29,7 +30,7 @@ services:
       - xpack.security.enabled=false
       - discovery.type=single-node
       - cluster.routing.allocation.disk.threshold_enabled=false
-      - search.allow_expensive_queries=true
+#      - search.allow_expensive_queries=true
     ulimits:
       memlock:
         soft: -1
