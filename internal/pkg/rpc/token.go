@@ -2,8 +2,7 @@ package rpc
 
 import (
 	"fmt"
-
-	"github.com/rarecircles/backend-challenge-go/eth"
+	"github.com/jose-camilo/backend-challenge-go/internal/pkg/eth"
 )
 
 func (c *Client) GetERC20(tokenAddr eth.Address) (*eth.Token, error) {
