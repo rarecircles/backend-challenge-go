@@ -20,7 +20,7 @@ help:
 
 default: help
 
-setup:
+netsetup:
 	docker network create rarecircles
 
 build:
