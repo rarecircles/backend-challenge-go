@@ -1,0 +1,17 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "server",
+    srcs = ["server.go"],
+    importpath = "github.com/questionmarkquestionmark/go-go-backend/token_api/internal/server",
+    visibility = ["//token_api:__subpackages__"],
+    deps = [
+        "//token_api/internal/api",
+        "//token_api/internal/dataloader",
+        "@com_github_prometheus_client_golang//prometheus/promhttp",
+        "@com_github_sirupsen_logrus//:logrus",
+        "@com_github_slok_go_http_metrics//metrics/prometheus",
+        "@com_github_slok_go_http_metrics//middleware",
+        "@com_github_slok_go_http_metrics//middleware/std",
+    ],
+)

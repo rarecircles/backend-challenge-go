@@ -1,0 +1,28 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "eth",
+    srcs = [
+        "crypto.go",
+        "decoder.go",
+        "decoder_log.go",
+        "encoder.go",
+        "errors.go",
+        "interface.go",
+        "log_event.go",
+        "logging.go",
+        "method.go",
+        "nft.go",
+        "numbers.go",
+        "token.go",
+        "types.go",
+        "utils.go",
+    ],
+    importpath = "github.com/questionmarkquestionmark/go-go-backend/token_api/internal/eth",
+    visibility = ["//token_api:__subpackages__"],
+    deps = [
+        "@com_github_btcsuite_btcd//btcec",
+        "@org_golang_x_crypto//sha3",
+        "@org_uber_go_zap//:zap",
+    ],
+)

@@ -1,0 +1,23 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "rpc",
+    srcs = [
+        "errors.go",
+        "json_encode.go",
+        "json_indent.go",
+        "json_scanner.go",
+        "json_stream.go",
+        "logging.go",
+        "rpc.go",
+        "token.go",
+        "token_helper.go",
+    ],
+    importpath = "github.com/questionmarkquestionmark/go-go-backend/token_api/internal/eth/rpc",
+    visibility = ["//token_api:__subpackages__"],
+    deps = [
+        "@com_github_rarecircles_backend_challenge_go//eth",
+        "@com_github_tidwall_gjson//:gjson",
+        "@org_uber_go_zap//:zap",
+    ],
+)

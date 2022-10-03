@@ -1,36 +1,29 @@
-# RareCircles Coding Challenge
+# RareCircles Coding Challenge implemented by Tyler
 
 ## Requirements
 
-Design an API endpoint that provides token information based on token title.
+To try the bazel stuff, install bazel through a package manager
 
-- the endpoint is exposed at `/tokens`
-- the partial (or complete) token title is passed as a query string parameter `q`
-- the endpoint returns a JSON response with an array suggested matches
-  - each suggestion has a name
-  - each suggestion has a symbol
-  - each suggestion has a address
-  - each suggestion has a decimals
-  - each suggestion has a total supply
-- at-least 2 go-test needs to be implemented
-- concurrency should be applied where appropriate  
-- feel free to add more features if you like!
+Otherwise just Go
 
-#### Notes
-- you have a list of tokens accounts defined inthe `addresses.jsonl` file that should be used as a seed to your application
-- we have included a `eth` lirbary that should help with any decoding and rpc calls
+Tested in Linux.
+### To start
+To run using bazel '''bazel run //token_api/:cmd'''
+To run all tests using bazel '''bazel test //token_api/...'''
 
-#### Sample responses
+To run without using bazel '''go run ./token_api/cmd'''. The env var ADDRESS_DATA_PATH will need to be set to "./internal/dataloader/data/addresses.jsonl"
 
-These responses are meant to provide guidance. The exact values can vary based on the data source and scoring algorithm.
+### Useful info
+By default server runs on 0.0.0.0:8000 with prometheus metrics running on 0.0.0.0:9000
 
+### Endpoint info
 **Near match**
 
     GET /tokens?q=rare
 
 ```json
 {
-  "tokesn": [
+  "tokens": [
     {
       "name": "RareCircles",
       "symbol": "RCI",
@@ -57,49 +50,4 @@ These responses are meant to provide guidance. The exact values can vary based o
 {
   "tokens": []
 }
-```
-
-
-### Non-functional
-
-- All code should be written in Goland, Typescript or PHP.
-- Mitigations to handle high levels of traffic should be implemented.
-- Challenge is submitted as pull request against this repo ([fork it](https://help.github.com/articles/fork-a-repo/) and [create a pull request](https://help.github.com/articles/creating-a-pull-request-from-a-fork/)).
-- Documentation and maintainability is a plus.
-
-## Dataset
-
-You can find the necessary dataset along with its description and documentation in the [`data`](data/) directory.
-
-## Evaluation
-
-We will use the following criteria to evaluate your solution:
-
-- Capacity to follow instructions
-- Developer Experience (how easy it is to run your solution locally, how clear your documentation is, etc)
-- Solution correctness
-- Performance
-- Tests (quality and coverage)
-- Attention to detail
-- Ability to make sensible assumptions
-
-It is ok to ask us questions!
-
-We know that the time for this project is limited and it is hard to create a "perfect" solution, so we will consider that along with your experience when evaluating the submission.
-
-## Getting Started
-
-### Prerequisites
-
-You are going to need:
-
-- `Git`
-- `go`
-
-### Starting the application
-
-To start a local server run:
-
-```
-go run ./cmd/challenger
 ```

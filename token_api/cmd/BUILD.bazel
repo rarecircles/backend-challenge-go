@@ -1,0 +1,20 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "cmd_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/questionmarkquestionmark/go-go-backend/token_api/cmd",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//token_api/internal/server",
+        "@com_github_sethvargo_go_envconfig//:go-envconfig",
+        "@com_github_sirupsen_logrus//:logrus",
+    ],
+)
+
+go_binary(
+    name = "cmd",
+    embed = [":cmd_lib"],
+    envconfig
+    visibility = ["//visibility:public"],
+)

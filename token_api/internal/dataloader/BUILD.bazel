@@ -1,0 +1,21 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "dataloader",
+    srcs = ["load.go"],
+    data = ["data/addresses.jsonl"],
+    importpath = "github.com/questionmarkquestionmark/go-go-backend/token_api/internal/dataloader",
+    visibility = ["//token_api:__subpackages__"],
+    deps = [
+        "//token_api/internal/types",
+        "@com_github_rarecircles_backend_challenge_go//eth",
+        "@com_github_rarecircles_backend_challenge_go//eth/rpc",
+        "@com_github_sirupsen_logrus//:logrus",
+    ],
+)
+
+go_test(
+    name = "dataloader_test",
+    srcs = ["load_test.go"],
+    embed = [":dataloader"],
+)
