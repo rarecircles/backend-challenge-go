@@ -47,7 +47,8 @@ For better understanding the project, here is a directory tree:
 
 - The project runs on Ubuntu 20.04 with Golang version 1.18.
 - JSONL files are considered as a valid input. But the code can be extended to other input formats.
-- eth rpc request can not run multi-threading.
+- Eth rpc request can not run multi-threading.
+- Eth rpc server capable of providing token information
 
 ## Go installation
 

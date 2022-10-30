@@ -2,9 +2,9 @@ package processor
 
 import (
 	"github.com/stretchr/testify/require"
-	"testing"
 	"net/http"
 	"net/http/httptest"
+	"testing"
 )
 
 const seedFile string = "../../test/input/seed_data.jsonl"
@@ -17,7 +17,7 @@ func TestSeedParsing(t *testing.T) {
 }
 
 func TestRequest(t *testing.T) {
-	pc, err:= NewEthTokens(seedFile, rpcURL)
+	pc, err := NewEthTokens(seedFile, rpcURL)
 	require.Nil(t, err)
 
 	req, err := http.NewRequest("GET", "/tokens?q=ThereIsNoToken", nil)
@@ -29,4 +29,3 @@ func TestRequest(t *testing.T) {
 	act := res.Body.String()
 	require.Equal(t, exp, act)
 }
-	

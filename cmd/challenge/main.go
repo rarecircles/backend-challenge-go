@@ -20,7 +20,7 @@ func main() {
 	seedFile := *flagSeedFile
 
 	pc, err := processor.NewEthTokens(seedFile, rpcURL)
-	if err !=nil {
+	if err != nil {
 		zlog.Debug("init fail", zap.String("err", fmt.Sprintln(err)))
 		return
 	}

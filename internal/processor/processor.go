@@ -87,13 +87,16 @@ func NewEthTokens(filePath string, rpcURL string) (Processor, error) {
 					break
 				}
 				ethAddr, _ := eth.NewAddress(addr.Addr)
-				token, err := ethClient.GetERC20(ethAddr)
-				if err != nil {
-					zlog.Debug("read token", zap.String("err", fmt.Sprintln(err)))
-				} else {
-					processor.mu.Lock()
-					processor.Tokens[addr.Addr] = *token
-					processor.mu.Unlock()
+				for i:=0;i<10;i++{
+					token, err := ethClient.GetERC20(ethAddr)
+					if err != nil {
+						zlog.Debug("read token", zap.String("err", fmt.Sprintln(err)))
+					} else {
+						processor.mu.Lock()
+						processor.Tokens[addr.Addr] = *token
+						processor.mu.Unlock()
+						break
+					}
 				}
 			}
 		}()
@@ -121,7 +124,7 @@ func (pc *ethTokens) Handler(w http.ResponseWriter, r *http.Request) {
 		var apiRes response
 		apiRes.Res = make([]eth.Token, 0)
 		for _, v := range pc.Tokens {
-			if name_len<=len(v.Name) && strings.ToLower(v.Name[0:name_len]) == name {
+			if name_len <= len(v.Name) && strings.ToLower(v.Name[0:name_len]) == name {
 				apiRes.Res = append(apiRes.Res, v)
 			}
 		}
