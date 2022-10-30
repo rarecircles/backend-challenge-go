@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/rarecircles/backend-challenge-go/eth"
 	"github.com/rarecircles/backend-challenge-go/eth/rpc"
+	"github.com/rarecircles/backend-challenge-go/internal/processor"
 	"github.com/rarecircles/backend-challenge-go/logging"
 	"go.uber.org/zap"
 )
@@ -13,4 +14,5 @@ func init() {
 	zlog = logging.MustCreateLoggerWithServiceName("challenge")
 	rpc.SetLogger(zlog)
 	eth.SetLogger(zlog)
+	processor.SetLogger(zlog)
 }
