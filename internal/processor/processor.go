@@ -74,7 +74,6 @@ func NewEthTokens(filePath string, rpcURL string) (Processor, error) {
 		return &processor, err
 	}
 	//read ERC20 tokens
-	//rpc not concurrent safe
 	var wg sync.WaitGroup
 	NumConcur := 1
 	wg.Add(NumConcur)

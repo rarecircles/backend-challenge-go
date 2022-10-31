@@ -38,6 +38,7 @@ For better understanding the project, here is a directory tree:
 |-- scripts
     |-- build.sh
     |-- test.sh
+    |-- concurrent_request.sh
 |-- logging (default)  
 |-- eth (default)  
 |-- data (default)   
@@ -113,3 +114,7 @@ go fmt ./...
 In the future, we should build a docker image that enables the application to run on any platform.
 Using trie data structure to record tokens for faster search. 
 Real-time updates tokens
+
+## Developer Notes
+
+The default rpc URL (https://eth-mainnet.alchemyapi.io/v2/) does not work (http 404 error, page not found). The developer tested with other Ethereum rpc URL searched online. Those connections does not support high speed token reading. Concurrent requests result in http 429 error (too many requests). Thus, the bootstrapping phase depends on the performance of the Ethereum rpc server.
