@@ -17,7 +17,7 @@ For better understanding the project, here is a directory tree:
 ```
 |-- LICENSE
 |-- README.md
-|-- Challenge.md
+|-- Challenge_README.md
 |-- go.mod
 |-- go.sum
 |-- .gitignore
@@ -34,7 +34,7 @@ For better understanding the project, here is a directory tree:
     |-- input 
         |-- seed_data.jsonl
     |-- output
-        |-- capital_one_sample_output.json
+        |-- ThereIsNoToken
 |-- scripts
     |-- build.sh
     |-- test.sh
@@ -48,7 +48,6 @@ For better understanding the project, here is a directory tree:
 
 - The project runs on Ubuntu 20.04 with Golang version 1.18.
 - JSONL files are considered as a valid input. But the code can be extended to other input formats.
-- Eth rpc request can not run multi-threading.
 - Eth rpc server capable of providing token information
 
 ## Go installation
@@ -113,7 +112,7 @@ go fmt ./...
 
 In the future, we should build a docker image that enables the application to run on any platform.
 Using trie data structure to record tokens for faster search. 
-Real-time updates tokens
+Real-time updates tokens.
 
 ## Developer Notes
 
