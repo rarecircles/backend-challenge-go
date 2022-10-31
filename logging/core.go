@@ -20,7 +20,7 @@ func MustCreateLoggerWithServiceName(serviceName string, opts ...zap.Option) *za
 func mustCreateLoggerWithLevel(serviceName string, atomicLevel zap.AtomicLevel, opts ...zap.Option) *zap.Logger {
 	logger, err := createLoggerWithLevel(serviceName, atomicLevel, opts...)
 	if err != nil {
-		panic(fmt.Errorf("unable to create logger (in production: %t): %s", isProductionEnvironment(), err))
+		panic(fmt.Errorf("unable to create logging (in production: %t): %s", isProductionEnvironment(), err))
 	}
 
 	return logger
@@ -29,21 +29,21 @@ func mustCreateLoggerWithLevel(serviceName string, atomicLevel zap.AtomicLevel, 
 func createLoggerWithLevel(serviceName string, atomicLevel zap.AtomicLevel, opts ...zap.Option) (*zap.Logger, error) {
 	config := BasicLoggingConfig(serviceName, atomicLevel, opts...)
 
-	zlog, err := config.Build(opts...)
+	zLog, err := config.Build(opts...)
 	if err != nil {
 		return nil, err
 	}
 
 	if AutoStartServer {
 		go func() {
-			zlog.Info("starting atomic level switcher, port :1065")
+			zLog.Info("starting atomic level switcher, port :1065")
 			if err := http.ListenAndServe(":1065", atomicLevel); err != nil {
-				zlog.Info("failed listening on :1065 to switch log level:", zap.Error(err))
+				zLog.Info("failed listening on :1065 to switch log level:", zap.Error(err))
 			}
 		}()
 	}
 
-	return zlog, nil
+	return zLog, nil
 }
 
 func BasicLoggingConfig(serviceName string, atomicLevel zap.AtomicLevel, opts ...zap.Option) *zap.Config {

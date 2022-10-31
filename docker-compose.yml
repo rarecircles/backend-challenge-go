@@ -1,0 +1,47 @@
+version: "3.7"
+services:
+  challenge:
+    networks:
+      - rarecircles
+    build:
+      context: .
+      target: app
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    restart: always
+    volumes:
+      - ./:/go/src/github.com/degarajesh/backend-challenge-go
+    depends_on:
+      - elasticsearch
+
+  elasticsearch:
+    networks:
+      - rarecircles
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.4.0
+    container_name: elasticsearch
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+      - cluster.routing.allocation.disk.threshold_enabled=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+      - 9300:9300
+networks:
+  rarecircles:
+    external:
+      name: rarecircles
+volumes:
+  elasticsearch-data:
+    driver: local

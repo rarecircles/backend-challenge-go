@@ -2,6 +2,7 @@ package rpc
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -12,7 +13,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/rarecircles/backend-challenge-go/eth"
+	"github.com/degarajesh/backend-challenge-go/eth"
 	"github.com/tidwall/gjson"
 )
 
@@ -33,7 +34,10 @@ func NewClient(url string, opts ...Option) *Client {
 		URL: url,
 	}
 
-	c.httpClient = http.DefaultClient
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	c.httpClient = &http.Client{Transport: tr}
 
 	for _, opt := range opts {
 		opt(c)

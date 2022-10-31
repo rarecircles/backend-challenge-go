@@ -496,14 +496,14 @@ func stateE0(s *scanner, c byte) int {
 // stateT is the state after reading `t`.
 func stateT(s *scanner, c byte) int {
 	if c == 'r' {
-		s.step = stateTr
+		s.step = stateTrue
 		return scanContinue
 	}
 	return s.error(c, "in literal true (expecting 'r')")
 }
 
-// stateTr is the state after reading `tr`.
-func stateTr(s *scanner, c byte) int {
+// stateTrue is the state after reading `true`.
+func stateTrue(s *scanner, c byte) int {
 	if c == 'u' {
 		s.step = stateTru
 		return scanContinue
@@ -541,14 +541,14 @@ func stateFa(s *scanner, c byte) int {
 // stateFal is the state after reading `fal`.
 func stateFal(s *scanner, c byte) int {
 	if c == 's' {
-		s.step = stateFals
+		s.step = stateFalse
 		return scanContinue
 	}
 	return s.error(c, "in literal false (expecting 's')")
 }
 
-// stateFals is the state after reading `fals`.
-func stateFals(s *scanner, c byte) int {
+// stateFalse is the state after reading `false`.
+func stateFalse(s *scanner, c byte) int {
 	if c == 'e' {
 		s.step = stateEndValue
 		return scanContinue

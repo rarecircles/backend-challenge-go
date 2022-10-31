@@ -2,10 +2,9 @@ package rpc
 
 import (
 	"fmt"
+	"github.com/degarajesh/backend-challenge-go/eth"
 	"math/big"
 	"regexp"
-
-	"github.com/rarecircles/backend-challenge-go/eth"
 )
 
 var baseTokenURIMethodDef = eth.MustNewMethodDef("baseTokenURI() (string)")

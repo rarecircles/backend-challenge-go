@@ -37,13 +37,13 @@ import (
 // - It encodes byte array as hex encoding with "0x" prefix
 // - The method MarshalJSONRPC has precedence over standard `MarshalJSON`
 // - It supports JSON-RPC big.Int type out of the box
-// - The escapeHTML option is to supported.
+// - The escapeHTML option is too supported.
 //
 // Marshal traverses the value v recursively.
-// If an encountered value implements the Marshaler interface
+// If an encountered value implements the Marshaller interface
 // and is not a nil pointer, Marshal calls its MarshalJSON method
 // to produce JSON. If no MarshalJSON method is present but the
-// value implements encoding.TextMarshaler instead, Marshal calls
+// value implements encoding.TextMarshaller instead, Marshal calls
 // its MarshalText method and encodes the result as a JSON string.
 // The nil pointer exception is not strictly necessary
 // but mimics a similar, necessary exception in the behavior of
@@ -89,31 +89,31 @@ import (
 //
 // Examples of struct field tags and their meanings:
 //
-//   // Field appears in JSON as key "myName".
-//   Field int `json:"myName"`
+//	// Field appears in JSON as key "myName".
+//	Field int `json:"myName"`
 //
-//   // Field appears in JSON as key "myName" and
-//   // the field is omitted from the object if its value is empty,
-//   // as defined above.
-//   Field int `json:"myName,omitempty"`
+//	// Field appears in JSON as key "myName" and
+//	// the field is omitted from the object if its value is empty,
+//	// as defined above.
+//	Field int `json:"myName,omitempty"`
 //
-//   // Field appears in JSON as key "Field" (the default), but
-//   // the field is skipped if empty.
-//   // Note the leading comma.
-//   Field int `json:",omitempty"`
+//	// Field appears in JSON as key "Field" (the default), but
+//	// the field is skipped if empty.
+//	// Note the leading comma.
+//	Field int `json:",omitempty"`
 //
-//   // Field is ignored by this package.
-//   Field int `json:"-"`
+//	// Field is ignored by this package.
+//	Field int `json:"-"`
 //
-//   // Field appears in JSON as key "-".
-//   Field int `json:"-,"`
+//	// Field appears in JSON as key "-".
+//	Field int `json:"-,"`
 //
 // The "string" option signals that a field is stored as JSON inside a
 // JSON-encoded string. It applies only to fields of string, floating point,
 // integer, or boolean types. This extra level of encoding is sometimes used
 // when communicating with JavaScript programs:
 //
-//    Int64String int64 `json:",string"`
+//	Int64String int64 `json:",string"`
 //
 // The key name will be used if it's a non-empty string consisting of
 // only Unicode letters, digits, and ASCII punctuation except quotation
@@ -146,11 +146,11 @@ import (
 // a JSON tag of "-".
 //
 // Map values encode as JSON objects. The map's key type must either be a
-// string, an integer type, or implement encoding.TextMarshaler. The map keys
+// string, an integer type, or implement encoding.TextMarshaller. The map keys
 // are sorted and used as JSON object keys by applying the following rules,
 // subject to the UTF-8 coercion described for string values above:
 //   - keys of any string type are used directly
-//   - encoding.TextMarshalers are marshaled
+//   - encoding.TextMarshals are marshaled
 //   - integer keys are converted to strings
 //
 // Pointer values encode as the value pointed to.
@@ -166,7 +166,6 @@ import (
 // JSON cannot represent cyclic data structures and Marshal does not
 // handle them. Passing cyclic structures to Marshal will result in
 // an error.
-//
 func MarshalJSONRPC(v interface{}) ([]byte, error) {
 	e := newEncodeState()
 
@@ -255,8 +254,6 @@ func (e *UnsupportedValueError) Error() string {
 // attempting to encode a string value with invalid UTF-8 sequences.
 // As of Go 1.2, Marshal instead coerces the string to valid UTF-8 by
 // replacing invalid bytes with the Unicode replacement rune U+FFFD.
-//
-// Deprecated: No longer used; kept for compatibility.
 type InvalidUTF8Error struct {
 	S string // the whole string value that caused the error
 }
@@ -435,7 +432,7 @@ func newTypeEncoder(t reflect.Type, allowAddr bool) encoderFunc {
 		}
 
 		if reflect.PtrTo(t).Implements(marshalerType) {
-			return newCondAddrEncoder(addrMarshalerEncoder, newTypeEncoder(t, false))
+			return newCondAddrEncoder(addrMarshallerEncoder, newTypeEncoder(t, false))
 		}
 	}
 
@@ -445,17 +442,17 @@ func newTypeEncoder(t reflect.Type, allowAddr bool) encoderFunc {
 	}
 
 	if t.Implements(marshalerRPCType) {
-		return marshalerRPCEncoder
+		return marshallerRACEEncoder
 	}
 	if t.Implements(marshalerType) {
 		return marshalerEncoder
 	}
 
 	if t.Kind() != reflect.Ptr && allowAddr && reflect.PtrTo(t).Implements(textMarshalerType) {
-		return newCondAddrEncoder(addrTextMarshalerEncoder, newTypeEncoder(t, false))
+		return newCondAddrEncoder(addrTextMarshallerEncoder, newTypeEncoder(t, false))
 	}
 	if t.Implements(textMarshalerType) {
-		return textMarshalerEncoder
+		return textMarshallerEncoder
 	}
 
 	switch t.Kind() {
@@ -492,7 +489,7 @@ func invalidValueEncoder(e *encodeState, v reflect.Value, _ encOpts) {
 	e.WriteString("null")
 }
 
-func marshalerRPCEncoder(e *encodeState, v reflect.Value, opts encOpts) {
+func marshallerRACEEncoder(e *encodeState, v reflect.Value, opts encOpts) {
 	if v.Kind() == reflect.Ptr && v.IsNil() {
 		e.WriteString("null")
 		return
@@ -535,7 +532,10 @@ func marshalerEncoder(e *encodeState, v reflect.Value, opts encOpts) {
 func addrMarshalerRPCEncoder(e *encodeState, v reflect.Value, opts encOpts) {
 	va := v.Addr()
 	if va.IsNil() {
-		e.WriteString("null")
+		_, err := e.WriteString("null")
+		if err != nil {
+			return
+		}
 		return
 	}
 	m := va.Interface().(MarshalerRPC)
@@ -549,7 +549,7 @@ func addrMarshalerRPCEncoder(e *encodeState, v reflect.Value, opts encOpts) {
 	}
 }
 
-func addrMarshalerEncoder(e *encodeState, v reflect.Value, opts encOpts) {
+func addrMarshallerEncoder(e *encodeState, v reflect.Value, opts encOpts) {
 	va := v.Addr()
 	if va.IsNil() {
 		e.WriteString("null")
@@ -566,7 +566,7 @@ func addrMarshalerEncoder(e *encodeState, v reflect.Value, opts encOpts) {
 	}
 }
 
-func textMarshalerEncoder(e *encodeState, v reflect.Value, opts encOpts) {
+func textMarshallerEncoder(e *encodeState, v reflect.Value, opts encOpts) {
 	if v.Kind() == reflect.Ptr && v.IsNil() {
 		e.WriteString("null")
 		return
@@ -583,7 +583,7 @@ func textMarshalerEncoder(e *encodeState, v reflect.Value, opts encOpts) {
 	e.stringBytes(b, opts.escapeHTML)
 }
 
-func addrTextMarshalerEncoder(e *encodeState, v reflect.Value, opts encOpts) {
+func addrTextMarshallerEncoder(e *encodeState, v reflect.Value, opts encOpts) {
 	va := v.Addr()
 	if va.IsNil() {
 		e.WriteString("null")
@@ -602,7 +602,10 @@ func boolEncoder(e *encodeState, v reflect.Value, opts encOpts) {
 		e.WriteByte('"')
 	}
 	if v.Bool() {
-		e.WriteString("true")
+		_, err := e.WriteString("true")
+		if err != nil {
+			return
+		}
 	} else {
 		e.WriteString("false")
 	}
@@ -621,7 +624,10 @@ func intEncoder(e *encodeState, v reflect.Value, _ encOpts) {
 		b := bytes.TrimPrefix(strconv.AppendInt(e.scratch[:0], v.Int(), 16), prefixZeroCharacter)
 		e.Write(b)
 	}
-	e.WriteByte('"')
+	err := e.WriteByte('"')
+	if err != nil {
+		return
+	}
 }
 
 var prefixZeroCharacter = []byte{'0'}
@@ -660,7 +666,10 @@ func bigIntEncoder(e *encodeState, v reflect.Value, _ encOpts) {
 	// Fast path, number fit in scratch space
 	if in.IsUint64() {
 		b := bytes.TrimPrefix(in.Append(e.scratch[:0], 16), prefixZeroCharacter)
-		e.Write(b)
+		_, err := e.Write(b)
+		if err != nil {
+			return
+		}
 	} else {
 		// FIXME: This perform an extra allocation for the byte buffer, could we eliminated it with some Writer interface?
 		//        The big.Int type gives access to its internal bytes structure, there might be something to do here. We
@@ -683,19 +692,19 @@ func (bits floatEncoder) encode(e *encodeState, v reflect.Value, opts encOpts) {
 	// Convert as if by ES6 number to string conversion.
 	// This matches most other JSON generators.
 	// See golang.org/issue/6384 and golang.org/issue/14135.
-	// Like fmt %g, but the exponent cutoffs are different
+	// Like fmt2 %g, but the exponent cutoffs are different
 	// and exponents themselves are not padded to two digits.
 	b := e.scratch[:0]
 	abs := math.Abs(f)
-	fmt := byte('f')
+	fmt2 := byte('f')
 	// Note: Must use float32 comparisons for underlying float32 value to get precise cutoffs right.
 	if abs != 0 {
 		if bits == 64 && (abs < 1e-6 || abs >= 1e21) || bits == 32 && (float32(abs) < 1e-6 || float32(abs) >= 1e21) {
-			fmt = 'e'
+			fmt2 = 'e'
 		}
 	}
-	b = strconv.AppendFloat(b, f, fmt, -1, int(bits))
-	if fmt == 'e' {
+	b = strconv.AppendFloat(b, f, fmt2, -1, int(bits))
+	if fmt2 == 'e' {
 		// clean up e-09 to e-9
 		n := len(b)
 		if n >= 4 && b[n-4] == 'e' && b[n-3] == '-' && b[n-2] == '0' {
@@ -880,7 +889,7 @@ type mapEncoder struct {
 	elemEnc encoderFunc
 }
 
-func (me mapEncoder) encode(e *encodeState, v reflect.Value, opts encOpts) {
+func (m mapEncoder) encode(e *encodeState, v reflect.Value, opts encOpts) {
 	if v.IsNil() {
 		e.WriteString("null")
 		return
@@ -910,11 +919,14 @@ func (me mapEncoder) encode(e *encodeState, v reflect.Value, opts encOpts) {
 
 	for i, kv := range sv {
 		if i > 0 {
-			e.WriteByte(',')
+			err := e.WriteByte(',')
+			if err != nil {
+				return
+			}
 		}
 		e.string(kv.s, opts.escapeHTML)
 		e.WriteByte(':')
-		me.elemEnc(e, v.MapIndex(kv.v), opts)
+		m.elemEnc(e, v.MapIndex(kv.v), opts)
 	}
 	e.WriteByte('}')
 	e.ptrLevel--
@@ -964,7 +976,10 @@ func encodeByteSlice(e *encodeState, v reflect.Value, _ encOpts) {
 		enc := hex.NewEncoder(e)
 		enc.Write(s)
 	}
-	e.WriteByte('"')
+	err := e.WriteByte('"')
+	if err != nil {
+		return
+	}
 }
 
 // sliceEncoder just wraps an arrayEncoder, checking to make sure the value isn't nil.
@@ -1152,7 +1167,10 @@ func (e *encodeState) string(s string, escapeHTML bool) {
 			case '\n':
 				e.WriteByte('n')
 			case '\r':
-				e.WriteByte('r')
+				err := e.WriteByte('r')
+				if err != nil {
+					return
+				}
 			case '\t':
 				e.WriteByte('t')
 			default:
@@ -1174,7 +1192,10 @@ func (e *encodeState) string(s string, escapeHTML bool) {
 			if start < i {
 				e.WriteString(s[start:i])
 			}
-			e.WriteString(`\ufffd`)
+			_, err := e.WriteString(`\ufffd`)
+			if err != nil {
+				return
+			}
 			i += size
 			start = i
 			continue
@@ -1215,7 +1236,10 @@ func (e *encodeState) stringBytes(s []byte, escapeHTML bool) {
 				continue
 			}
 			if start < i {
-				e.Write(s[start:i])
+				_, err := e.Write(s[start:i])
+				if err != nil {
+					return
+				}
 			}
 			e.WriteByte('\\')
 			switch b {
@@ -1785,8 +1809,9 @@ const (
 // 4) simpleLetterEqualFold, no specials, no non-letters.
 //
 // The letters S and K are special because they map to 3 runes, not just 2:
-//  * S maps to s and to U+017F 'ſ' Latin small letter long s
-//  * k maps to K and to U+212A 'K' Kelvin sign
+//   - S maps to s and to U+017F 'ſ' Latin small letter long s
+//   - k maps to K and to U+212A 'K' Kelvin sign
+//
 // See https://play.golang.org/p/tTxjOc0OGo
 //
 // The returned function is specialized for matching against s and
