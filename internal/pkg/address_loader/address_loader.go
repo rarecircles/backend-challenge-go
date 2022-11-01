@@ -10,22 +10,24 @@ import (
 )
 
 type AddressLoader interface {
-	Load(filepath string) error
+	Load(filePath string) error
 }
 
 type addressLoader struct {
 	log *zap.Logger
+	ch  chan<- string
 }
 
 // NewAddressLoader creates AddressLoader
-func NewAddressLoader(log *zap.Logger) AddressLoader {
+func NewAddressLoader(log *zap.Logger, ch chan<- string) AddressLoader {
 	return &addressLoader{
 		log: log,
+		ch:  ch,
 	}
 }
 
-func (al addressLoader) Load(filepath string) error {
-	f, err := os.Open(filepath)
+func (al addressLoader) Load(filePath string) error {
+	f, err := os.Open(filePath)
 	if err != nil {
 		return fmt.Errorf("failed to open a file: %w", err)
 	}
@@ -38,14 +40,14 @@ func (al addressLoader) Load(filepath string) error {
 
 	s := bufio.NewScanner(f)
 	for s.Scan() {
-		al.log.Info(s.Text())
 		if len(s.Text()) == 56 {
-			al.log.Info(s.Text()[12:54])
+			address := s.Text()[12:54]
+			al.ch <- address
 		}
 	}
 
 	if err := s.Err(); err != nil {
-		al.log.Fatal(err.Error())
+		return fmt.Errorf("address loader scan error: %w", err)
 	}
 
 	return nil

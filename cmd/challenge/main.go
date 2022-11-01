@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/rarecircles/backend-challenge-go/internal/api"
@@ -10,6 +11,10 @@ import (
 	"github.com/rarecircles/backend-challenge-go/pkg/logger"
 
 	"go.uber.org/zap"
+)
+
+const (
+	numJobs = 5
 )
 
 var log *zap.Logger
@@ -32,21 +37,51 @@ func main() {
 func run(log *zap.Logger) error {
 	addr := ":" + os.Getenv("HTTP_PORT")
 	rpcURL := os.Getenv("RPC_URL")
-
+	rpcAPIKey := os.Getenv("RPC_API_KEY")
+	filePath := os.Getenv("ADDRESS_FILE_PATH")
 	rpc.SetLogger(log)
 	eth.SetLogger(log)
 
-	// read address file
-	// TODO: use goroutine
-	filePath := "data/addresses.jsonl"
-	al := addressLoader.NewAddressLoader(log)
-	if err := al.Load(filePath); err != nil {
-		log.Fatal("failed to load an address file: " + err.Error())
+	addrCh := make(chan string, numJobs)
+	al := addressLoader.NewAddressLoader(log, addrCh)
+	if al == nil {
+		log.Fatal("failed to create an address loader")
 	}
 
-	// TODO: get tokens from rpc
+	rpcClient := rpc.NewClient(rpcURL + rpcAPIKey)
+	if rpcClient == nil {
+		log.Fatal("failed to create a rpc client")
+	}
 
-	// TODO: seed tokens
+	// read address file
+	go func() {
+		if err := al.Load(filePath); err != nil {
+			log.Fatal("failed to load an address file: " + err.Error())
+		}
+		defer close(addrCh)
+	}()
+
+	// get tokens from rpc
+	go func() {
+		for address := range addrCh {
+			ethAddr, err := eth.NewAddress(address)
+			if err != nil {
+				log.Info("failed to create eth address " + err.Error())
+			}
+			ethToken, err := rpcClient.GetERC20(ethAddr)
+			if err != nil {
+				log.Info("failed to get eth token " + err.Error())
+			}
+			log.Info(ethToken.Name)
+			log.Info(ethToken.Symbol)
+			log.Info(ethToken.TotalSupply.String())
+			log.Info(fmt.Sprintf("%d", ethToken.Decimals))
+			log.Info(string(ethToken.Address))
+			log.Info("-----------------------------------")
+		}
+	}()
+
+	// TODO: seed eth tokens
 
 	log.Info("Running TOKEN-API",
 		zap.String("httpL_listen_addr", addr),

@@ -8,7 +8,8 @@ RUN go build -o token-api cmd/challenge/main.go
 
 FROM alpine:3.16
 COPY --from=build-token-api /token-api/token-api /token-api/token-api
-COPY --from=build-token-api /token-api/data/addresses.jsonl /token-api/data/addresses.jsonl
+# COPY --from=build-token-api /token-api/data/addresses.jsonl /token-api/data/addresses.jsonl
+COPY --from=build-token-api /token-api/data/addresses_test.jsonl /token-api/data/addresses_test.jsonl
 WORKDIR /token-api
 
 CMD ["./token-api"]

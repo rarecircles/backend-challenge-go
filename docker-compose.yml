@@ -4,6 +4,8 @@ services:
     environment:
       - HTTP_PORT=8080
       - RPC_URL=https://eth-mainnet.alchemyapi.io/v2/
+      - RPC_API_KEY=Tctq96Z9JWVfyUzTBo7FrQtOVr67uIBV
+      - ADDRESS_FILE_PATH=data/addresses_test.jsonl
     build:
       context: .
       dockerfile: docker/dockerfile.token-api
