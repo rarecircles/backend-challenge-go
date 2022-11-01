@@ -5,7 +5,7 @@ import (
 	"math/big"
 	"regexp"
 
-	"github.com/rarecircles/backend-challenge-go/eth"
+	"github.com/rarecircles/backend-challenge-go/internal/pkg/eth"
 )
 
 var baseTokenURIMethodDef = eth.MustNewMethodDef("baseTokenURI() (string)")

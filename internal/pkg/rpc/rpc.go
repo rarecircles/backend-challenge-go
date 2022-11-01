@@ -5,15 +5,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"go.uber.org/zap"
 	"io/ioutil"
 	"math/big"
 	"net/http"
 	"strconv"
 	"strings"
 
-	"github.com/rarecircles/backend-challenge-go/eth"
+	"github.com/rarecircles/backend-challenge-go/internal/pkg/eth"
 	"github.com/tidwall/gjson"
+	"go.uber.org/zap"
 )
 
 var ErrFalseResp = errors.New("false response")

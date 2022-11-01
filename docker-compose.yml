@@ -1,0 +1,9 @@
+version: "3.8"
+services:
+  token-api:
+    build:
+      context: .
+      dockerfile: docker/dockerfile.token-api
+    ports:
+      - "8080:8080"
+    
