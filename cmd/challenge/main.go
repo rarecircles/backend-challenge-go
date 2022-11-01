@@ -1,10 +1,10 @@
 package main
 
 import (
-	"flag"
 	"os"
 
 	"github.com/rarecircles/backend-challenge-go/internal/api"
+	addressLoader "github.com/rarecircles/backend-challenge-go/internal/pkg/address_loader"
 	"github.com/rarecircles/backend-challenge-go/internal/pkg/eth"
 	"github.com/rarecircles/backend-challenge-go/internal/pkg/rpc"
 	"github.com/rarecircles/backend-challenge-go/pkg/logger"
@@ -15,16 +15,34 @@ import (
 var log *zap.Logger
 
 func main() {
-	flag.Parse()
+	service := "TOKEN-API"
+	log = logger.MustCreateLoggerWithServiceName(service)
+	defer log.Sync()
+
+	// Perform the startup and shutdown sequence.
+	if err := run(log); err != nil {
+		log.Error("startup",
+			zap.String("ERROR", err.Error()),
+		)
+		log.Sync()
+		os.Exit(1)
+	}
+}
+
+func run(log *zap.Logger) error {
 	addr := ":" + os.Getenv("HTTP_PORT")
 	rpcURL := os.Getenv("RPC_URL")
 
-	service := "TOKEN-API"
-	log = logger.MustCreateLoggerWithServiceName(service)
 	rpc.SetLogger(log)
 	eth.SetLogger(log)
 
-	// TODO: read address file
+	// read address file
+	// TODO: use goroutine
+	filePath := "data/addresses.jsonl"
+	al := addressLoader.NewAddressLoader(log)
+	if err := al.Load(filePath); err != nil {
+		log.Fatal("failed to load an address file: " + err.Error())
+	}
 
 	// TODO: get tokens from rpc
 
@@ -43,4 +61,6 @@ func main() {
 	if err := srv.ListenAndServe(); err != nil {
 		log.Fatal("server error " + err.Error())
 	}
+
+	return nil
 }

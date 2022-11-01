@@ -1,5 +1,5 @@
 // Package tokengrp maintains the group of handlers for tokens
-package tokengrp
+package token_grp
 
 import (
 	"fmt"

@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/rarecircles/backend-challenge-go/internal/api/handler"
-	"github.com/rarecircles/backend-challenge-go/internal/api/handler/tokengrp"
+	tokenGrp "github.com/rarecircles/backend-challenge-go/internal/api/handler/token_grp"
 	"go.uber.org/zap"
 )
 
@@ -22,7 +22,7 @@ func NewAPIServer(cfg *Config) *http.Server {
 
 	r.Handle(http.MethodGet, "/healthcheck", handler.HealthCheck)
 
-	th := tokengrp.NewHandler(cfg.Log)
+	th := tokenGrp.NewHandler(cfg.Log)
 	r.Handle(http.MethodGet, "/tokens", th.QueryTokens)
 
 	srv := http.Server{
