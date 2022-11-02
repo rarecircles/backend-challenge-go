@@ -14,7 +14,7 @@ type TokenDTO struct {
 	TotalSupply *big.Int `json:"total_supply"`
 }
 
-func toTokenDTO(ethTokens []eth.Token) []TokenDTO {
+func ToTokenDTO(ethTokens []eth.Token) []TokenDTO {
 	tokens := make([]TokenDTO, len(ethTokens))
 	for i := range ethTokens {
 		tokens[i] = TokenDTO{

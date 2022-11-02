@@ -45,7 +45,7 @@ func (h *Handler) QueryTokens(ctx *gin.Context) {
 	}
 
 	var resp QueryTokensResponse
-	resp.Tokens = toTokenDTO(ethTokens)
+	resp.Tokens = ToTokenDTO(ethTokens)
 
 	ctx.JSON(http.StatusOK, resp)
 }

@@ -9,6 +9,7 @@ require (
 	github.com/elastic/go-elasticsearch/v8 v8.4.0
 	github.com/gin-contrib/timeout v0.0.3
 	github.com/gin-gonic/gin v1.8.1
+	github.com/golang/mock v1.6.0
 	github.com/stretchr/testify v1.8.0
 	github.com/teris-io/shortid v0.0.0-20201117134242-e59966efd125
 	github.com/tidwall/gjson v1.11.0
@@ -34,7 +35,6 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.2 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/stretchr/objx v0.4.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
