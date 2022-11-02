@@ -3,11 +3,13 @@ package api
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/gin-gonic/gin"
 	"github.com/rarecircles/backend-challenge-go/internal/api/handler"
 	tokenGrp "github.com/rarecircles/backend-challenge-go/internal/api/handler/token_grp"
+	"github.com/rarecircles/backend-challenge-go/internal/api/middleware"
 	"github.com/rarecircles/backend-challenge-go/internal/service/search"
 	"go.uber.org/zap"
 )
@@ -22,6 +24,9 @@ type Config struct {
 // NewAPIServer creates http.Server that handle routes for the application.
 func NewAPIServer(cfg *Config) *http.Server {
 	r := gin.Default()
+
+	r.Use(middleware.TimeOut(5 * time.Second))
+	r.Use(middleware.NewRateLimiter(10, time.Second))
 
 	r.Handle(http.MethodGet, "/healthcheck", handler.HealthCheck)
 
