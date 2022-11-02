@@ -78,10 +78,6 @@ func GetToken(c *gin.Context) {
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 	addresses := ParseInput(byteValue)
 	result := make([]eth.Token, len(addresses))
-	fmt.Print("WORKING")
-	fmt.Print(addresses[0].Address)
-	fmt.Print("LENGTH")
-	fmt.Print(len(addresses))
 
 	//Get token information based on address and append to result
 	var wg sync.WaitGroup
