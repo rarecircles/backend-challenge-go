@@ -15,11 +15,11 @@ func TestAddressLoader(t *testing.T) {
 		expErr   string
 	}{
 		{
-			name:     "file open error",
+			name:     "FileOpenError",
 			filePath: "wrong_file_path",
 			expErr:   "failed to open a file",
 		}, {
-			name:     "success",
+			name:     "Success",
 			filePath: "./testdata/addresses_test.jsonl",
 			want: []string{
 				"0x22f4a547ca569ae4dfee96c7aeff37884e25b1cf",

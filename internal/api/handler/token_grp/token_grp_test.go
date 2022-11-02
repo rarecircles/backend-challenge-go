@@ -30,7 +30,7 @@ func TestQueryTokens(t *testing.T) {
 		expErr     string
 	}{
 		{
-			name:       "search service error",
+			name:       "SearchServiceError",
 			query:      "",
 			statusCode: http.StatusInternalServerError,
 			expTokens:  nil,
@@ -38,7 +38,7 @@ func TestQueryTokens(t *testing.T) {
 			expErr:     "failed to search tokens:",
 		},
 		{
-			name:       "success",
+			name:       "Success",
 			query:      "rare",
 			statusCode: http.StatusOK,
 			expTokens: []eth.Token{
@@ -59,7 +59,7 @@ func TestQueryTokens(t *testing.T) {
 			},
 		},
 		{
-			name:       "success - empty array",
+			name:       "SuccessWithEmptyArray",
 			query:      "ThereIsNoTokenHere",
 			statusCode: http.StatusOK,
 			expTokens:  []eth.Token{},
