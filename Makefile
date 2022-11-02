@@ -11,3 +11,7 @@ down:
 	docker-compose -f docker-compose.yml down
 
 all: build up
+
+test:
+	go test -v ./...
+	staticcheck ./...

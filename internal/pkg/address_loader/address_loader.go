@@ -27,10 +27,12 @@ func NewAddressLoader(log *zap.Logger, ch chan<- string) AddressLoader {
 }
 
 func (al addressLoader) Load(filePath string) error {
+	defer close(al.ch)
 	f, err := os.Open(filePath)
 	if err != nil {
 		return fmt.Errorf("failed to open a file: %w", err)
 	}
+
 	defer func() {
 		if err := f.Close(); err != nil {
 			al.log.Error("failed to close a file " + err.Error())
@@ -45,7 +47,6 @@ func (al addressLoader) Load(filePath string) error {
 			al.ch <- address
 		}
 	}
-	close(al.ch)
 
 	if err := s.Err(); err != nil {
 		return fmt.Errorf("address loader scan error: %w", err)
