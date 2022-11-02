@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rarecircles/backend-challenge-go/internal/api/handler"
 	tokenGrp "github.com/rarecircles/backend-challenge-go/internal/api/handler/token_grp"
-	"github.com/rarecircles/backend-challenge-go/internal/service"
+	"github.com/rarecircles/backend-challenge-go/internal/service/search"
 	"go.uber.org/zap"
 )
 
@@ -22,9 +22,10 @@ type Config struct {
 // NewAPIServer creates http.Server that handle routes for the application.
 func NewAPIServer(cfg *Config) *http.Server {
 	r := gin.Default()
+
 	r.Handle(http.MethodGet, "/healthcheck", handler.HealthCheck)
 
-	searchService := service.NewSearchService(cfg.Log, cfg.ESClient)
+	searchService := search.NewSearchService(cfg.Log, cfg.ESClient)
 	th := tokenGrp.NewHandler(cfg.Log, searchService)
 
 	r.Handle(http.MethodGet, "/tokens", th.QueryTokens)

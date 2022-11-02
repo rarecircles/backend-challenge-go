@@ -2,9 +2,9 @@ version: "3.8"
 services:
   # Elasticsearch
   # ref: https://medium.com/@TimvanBaarsen/how-to-run-an-elasticsearch-7-x-single-node-cluster-for-local-development-using-docker-compose-2b7ab73d8b82
-  elasticsearch: 
+  elasticsearch:
+    container_name: elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:8.5.0
-    container_name: elastic-search
     environment:
       - xpack.security.enabled=false
       - discovery.type=single-node
@@ -26,22 +26,24 @@ services:
       - 9300:9300
 
   token-api:
-    build:
-      context: .
-      dockerfile: docker/dockerfile.token-api
     container_name: token-api
     environment:
       - HTTP_PORT=8080
       - RPC_URL=https://eth-mainnet.alchemyapi.io/v2/
       - RPC_API_KEY=Tctq96Z9JWVfyUzTBo7FrQtOVr67uIBV
-      - ADDRESS_FILE_PATH=data/addresses_test.jsonl
-      - ELASTIC_SEARCH_URL=http://0.0.0.0:9200
-    depends_on:
-      - elasticsearch
+      - ADDRESS_FILE_PATH=data/addresses.jsonl
+      - ELASTICSEARCH_URL=http://elasticsearch:9200/
+      - SEED_DATA=false
+    build:
+      context: .
+      dockerfile: docker/dockerfile.token-api
     networks:
       - token-api-networks
+    restart: always
     ports:
       - "8080:8080"
+    depends_on:
+      - elasticsearch
 
 networks:
   token-api-networks:

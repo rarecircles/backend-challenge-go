@@ -1,4 +1,4 @@
-// Package tokengrp maintains the group of handlers for tokens
+// Package token_grp maintains the group of handlers for tokens
 package token_grp
 
 import (
@@ -6,16 +6,16 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rarecircles/backend-challenge-go/internal/service"
+	"github.com/rarecircles/backend-challenge-go/internal/service/search"
 	"go.uber.org/zap"
 )
 
 type Handler struct {
 	log           *zap.Logger
-	searchService service.SearchService
+	searchService search.SearchService
 }
 
-func NewHandler(log *zap.Logger, searchService service.SearchService) *Handler {
+func NewHandler(log *zap.Logger, searchService search.SearchService) *Handler {
 	return &Handler{
 		log:           log,
 		searchService: searchService,
@@ -38,7 +38,7 @@ func (h *Handler) QueryTokens(ctx *gin.Context) {
 		return
 	}
 
-	ethTokens, err := h.searchService.Search(ctx, req.Query)
+	ethTokens, err := h.searchService.SearchToken(ctx, req.Query)
 	if err != nil {
 		ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to search tokens: %w", err))
 		return
