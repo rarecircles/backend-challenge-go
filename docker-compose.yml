@@ -33,7 +33,7 @@ services:
       - RPC_API_KEY=Tctq96Z9JWVfyUzTBo7FrQtOVr67uIBV
       - ADDRESS_FILE_PATH=data/addresses.jsonl
       - ELASTICSEARCH_URL=http://elasticsearch:9200/
-      - SEED_DATA=false
+      - SEED_DATA=true
     build:
       context: .
       dockerfile: docker/dockerfile.token-api
