@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/blendle/zapdriver v1.3.1
 	github.com/btcsuite/btcd v0.22.0-beta
+	github.com/elastic/go-elasticsearch/v8 v8.4.0
 	github.com/gin-gonic/gin v1.8.1
 	github.com/teris-io/shortid v0.0.0-20201117134242-e59966efd125
 	github.com/tidwall/gjson v1.11.0
@@ -13,6 +14,7 @@ require (
 )
 
 require (
+	github.com/elastic/elastic-transport-go/v8 v8.1.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect

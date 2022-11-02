@@ -6,17 +6,19 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rarecircles/backend-challenge-go/internal/model"
+	"github.com/rarecircles/backend-challenge-go/internal/service"
 	"go.uber.org/zap"
 )
 
 type Handler struct {
-	log *zap.Logger
+	log           *zap.Logger
+	searchService service.SearchService
 }
 
-func NewHandler(log *zap.Logger) *Handler {
+func NewHandler(log *zap.Logger, searchService service.SearchService) *Handler {
 	return &Handler{
-		log: log,
+		log:           log,
+		searchService: searchService,
 	}
 }
 
@@ -25,7 +27,7 @@ type QueryTokensRequest struct {
 }
 
 type QueryTokensResponse struct {
-	Tokens []model.Token `json:"tokens"`
+	Tokens []TokenDTO `json:"tokens"`
 }
 
 func (h *Handler) QueryTokens(ctx *gin.Context) {
@@ -36,10 +38,14 @@ func (h *Handler) QueryTokens(ctx *gin.Context) {
 		return
 	}
 
-	h.log.Sugar().Infow("QueryTokens", "query", req)
-	// TODO: query tokens
+	ethTokens, err := h.searchService.Search(ctx, req.Query)
+	if err != nil {
+		ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to search tokens: %w", err))
+		return
+	}
 
 	var resp QueryTokensResponse
-	resp.Tokens = []model.Token{}
+	resp.Tokens = toTokenDTO(ethTokens)
+
 	ctx.JSON(http.StatusOK, resp)
 }

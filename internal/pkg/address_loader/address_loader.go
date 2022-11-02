@@ -45,6 +45,7 @@ func (al addressLoader) Load(filePath string) error {
 			al.ch <- address
 		}
 	}
+	close(al.ch)
 
 	if err := s.Err(); err != nil {
 		return fmt.Errorf("address loader scan error: %w", err)

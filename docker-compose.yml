@@ -35,6 +35,7 @@ services:
       - RPC_URL=https://eth-mainnet.alchemyapi.io/v2/
       - RPC_API_KEY=Tctq96Z9JWVfyUzTBo7FrQtOVr67uIBV
       - ADDRESS_FILE_PATH=data/addresses_test.jsonl
+      - ELASTIC_SEARCH_URL=http://0.0.0.0:9200
     depends_on:
       - elasticsearch
     networks:
