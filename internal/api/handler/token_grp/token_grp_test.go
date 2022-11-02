@@ -90,7 +90,7 @@ func TestQueryTokens(t *testing.T) {
 
 			if len(ctx.Errors) > 0 {
 				assert.Equal(t, tt.statusCode, w.Code)
-				assert.ErrorContains(t, ctx.Errors[0], tt.expErr)
+				assert.ErrorContains(t, ctx.Errors[len(ctx.Errors)-1], tt.expErr)
 			} else {
 				assert.Equal(t, tt.statusCode, w.Code)
 				assert.JSONEq(t, string(marshalled), w.Body.String())

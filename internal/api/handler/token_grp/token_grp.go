@@ -2,12 +2,18 @@
 package token_grp
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rarecircles/backend-challenge-go/internal/service/search"
 	"go.uber.org/zap"
+)
+
+var (
+	ErrInvalidInput   = errors.New("invalid input")
+	ErrSomethingWrong = errors.New("something wrong")
 )
 
 type Handler struct {
@@ -34,13 +40,19 @@ func (h *Handler) QueryTokens(ctx *gin.Context) {
 	var req QueryTokensRequest
 
 	if err := ctx.ShouldBindQuery(&req); err != nil {
-		ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("binding query: %w", err))
+		ctx.Error(fmt.Errorf("binding query: %w", err))
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": ErrInvalidInput,
+		})
 		return
 	}
 
 	ethTokens, err := h.searchService.SearchToken(ctx, req.Query)
 	if err != nil {
-		ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to search tokens: %w", err))
+		ctx.Error(fmt.Errorf("failed to search tokens: %w", err))
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": ErrSomethingWrong,
+		})
 		return
 	}
 

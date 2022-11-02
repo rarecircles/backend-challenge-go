@@ -60,8 +60,10 @@ func run(log *zap.Logger) error {
 	}
 
 	log.Info("Running TOKEN-API",
-		zap.String("httpL_listen_addr", addr),
+		zap.String("http_listen_addr", addr),
 		zap.String("rpc_url", rpcURL),
+		zap.String("file_path", filePath),
+		zap.String("elastic_search_url", esURL),
 	)
 
 	cfg := api.Config{
@@ -135,16 +137,17 @@ func seedTokens(ethTokenCh chan *eth.Token, esClient *elasticsearch.Client) {
 			log.Error(err.Error())
 		}
 
-		// uncomment this to see tokens
+		// Uncomment this to see tokens
 		// if resp.IsError() {
 		// 	log.Error("failed to index ",
 		// 		zap.String("token", fmt.Sprintf("%+v", t)),
 		// 	)
 		// } else {
-		// 	log.Error("success to index ",
+		// 	log.Info("success to index ",
 		// 		zap.String("token", fmt.Sprintf("%+v", t)),
 		// 	)
 		// }
+
 		resp.Body.Close()
 	}
 }
