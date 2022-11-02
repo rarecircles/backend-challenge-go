@@ -6,3 +6,4 @@ Dockerfile
 Makefile
 README.md
 *.rest
+elasticsearch-data/
