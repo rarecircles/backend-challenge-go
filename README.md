@@ -12,7 +12,7 @@ Design an API endpoint that provides token information based on token title.
   - Each suggestion has a address
   - Each suggestion has a decimals
   - Each suggestion has a total supply
-- At-least 2 go-test needs to be implemented
+- At least 2 go-test needs to be implemented
 - Concurrency should be applied where appropriate
 - Feel free to add more features if you like!
 
