@@ -7,7 +7,6 @@ import (
 	"io"
 	"os"
 	"strings"
-	"sync"
 
 	"github.com/rarecircles/backend-challenge-go/eth/rpc"
 	"github.com/rarecircles/backend-challenge-go/views"
@@ -48,39 +47,40 @@ func (ts *tokenService) GetTokensInfo(tokenTitle string) ([]eth.Token, error) {
 		}
 		addresses = append(addresses, address)
 	}
+	addresses = addresses[0:20]
 
-	// t := make(chan *eth.Token)
-	// for _, a := range addresses {
-	// 	go fetchTokenData(*ts, a, t)
-	// 	token := <-t
-	// 	if token != nil {
-	// 		tokens = append(tokens, *token)
-	// 	}
-	// }
-
-	// 429 responses sometimes with this approach. Can be avoided by extending response time of RPC client.
-	var wg sync.WaitGroup
-	// a caching layer can be added here to save tokens
-	// if in cache retrieve tokens from cache else fetch remotely
+	t := make(chan *eth.Token)
 	for _, a := range addresses {
-		wg.Add(1)
-		go func(a views.Address) {
-			defer wg.Done()
-			ethAddress, err := eth.NewAddress(a.Address)
-			if err != nil {
-				fmt.Println("ETH Address error", err)
-			}
-			ethToken, err := ts.rpcClient.GetERC20(ethAddress)
-			if err != nil {
-				fmt.Println("Token Error", err)
-			}
-
-			if ethToken != nil {
-				tokens = append(tokens, *ethToken)
-			}
-		}(a)
+		go fetchTokenData(*ts, a, t)
+		token := <-t
+		if token != nil {
+			tokens = append(tokens, *token)
+		}
 	}
-	wg.Wait()
+
+	// 429 responses sometimes with this approach. Can be avoided by adding retries to RPC client.
+	// var wg sync.WaitGroup
+	// a caching layer can be added here to save tokens
+	// if in cache retrieve tokens else fetch remotely
+	// for _, a := range addresses {
+	// 	wg.Add(1)
+	// 	go func(a views.Address) {
+	// 		defer wg.Done()
+	// 		ethAddress, err := eth.NewAddress(a.Address)
+	// 		if err != nil {
+	// 			fmt.Println("ETH Address error", err)
+	// 		}
+	// 		ethToken, err := ts.rpcClient.GetERC20(ethAddress)
+	// 		if err != nil {
+	// 			fmt.Println("Token Error", err)
+	// 		}
+
+	// 		if ethToken != nil {
+	// 			tokens = append(tokens, *ethToken)
+	// 		}
+	// 	}(a)
+	// }
+	// wg.Wait()
 
 	filteredTokens := filteredTokens(tokens, tokenTitle)
 	if len(filteredTokens) == 0 {
