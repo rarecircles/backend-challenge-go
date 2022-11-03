@@ -9,14 +9,15 @@ Design an API endpoint that provides token information based on token title.
 - the endpoint returns a JSON response with an array suggested matches
   - each suggestion has a name
   - each suggestion has a symbol
-  - each suggestion has a address
-  - each suggestion has a decimals
+  - each suggestion has an address
+  - each suggestion has decimals
   - each suggestion has a total supply
 - at-least 2 go-test needs to be implemented
-- concurrency should be applied where appropriate  
+- concurrency should be applied where appropriate
 - feel free to add more features if you like!
 
 #### Notes
+
 - you have a list of tokens accounts defined inthe `addresses.jsonl` file that should be used as a seed to your application
 - we have included a `eth` lirbary that should help with any decoding and rpc calls
 
@@ -30,21 +31,21 @@ These responses are meant to provide guidance. The exact values can vary based o
 
 ```json
 {
-  "tokesn": [
+  "tokens": [
     {
       "name": "RareCircles",
       "symbol": "RCI",
       "address": "0xdbf1344a0ff21bc098eb9ad4eef7de0f9722c02b",
       "decimals": 18,
-      "totalSupply": 1000000000,
+      "total_supply": 1000000000
     },
     {
       "name": "Rareible",
       "symbol": "RRI",
       "address": "e9c8934ebd00bf73b0e961d1ad0794fb22837206",
       "decimals": 9,
-      "totalSupply": 100,
-    },
+      "total_supply": 100
+    }
   ]
 }
 ```
@@ -59,10 +60,9 @@ These responses are meant to provide guidance. The exact values can vary based o
 }
 ```
 
-
 ### Non-functional
 
-- All code should be written in Goland, Typescript or PHP.
+- All code should be written in Golang, Typescript or PHP.
 - Mitigations to handle high levels of traffic should be implemented.
 - Challenge is submitted as pull request against this repo ([fork it](https://help.github.com/articles/fork-a-repo/) and [create a pull request](https://help.github.com/articles/creating-a-pull-request-from-a-fork/)).
 - Documentation and maintainability is a plus.
@@ -101,5 +101,5 @@ You are going to need:
 To start a local server run:
 
 ```
-go run ./cmd/challenger
+go run ./cmd/challenge
 ```

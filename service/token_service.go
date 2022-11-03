@@ -58,8 +58,10 @@ func (ts *tokenService) GetTokensInfo(tokenTitle string) ([]eth.Token, error) {
 	// 	}
 	// }
 
-	// 429 responses sometimes with this approach
+	// 429 responses sometimes with this approach. Can be avoided by extending response time of RPC client.
 	var wg sync.WaitGroup
+	// a caching layer can be added here to save tokens
+	// if in cache retrieve tokens from cache else fetch remotely
 	for _, a := range addresses {
 		wg.Add(1)
 		go func(a views.Address) {
