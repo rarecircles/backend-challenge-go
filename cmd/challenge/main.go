@@ -15,7 +15,7 @@ import (
 var flagHTTPListenAddr = flag.String("http-listen-port", ":8080", "HTTP listen address, if blacnk will default to ENV PORT")
 var flagRPCURL = flag.String("rpc-url", "https://eth-mainnet.alchemyapi.io/v2/", "RPC URL")
 
-var RPC_API_KEY = "XRI2EyCVf3dxzQOq_J536hrfQyLWS6lb" // needs to go in config.yml or ENV
+const RPC_API_KEY = "XRI2EyCVf3dxzQOq_J536hrfQyLWS6lb" // needs to go in config.yml or ENV
 
 func main() {
 	flag.Parse()
@@ -40,11 +40,15 @@ func main() {
 			Handler: r,
 		},
 	}
-	zlog.Info("starting server")
 
+	// done := make(chan os.Signal, 1)
+	// signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+
+	zlog.Info("starting server")
 	if err := httpServer.ListenAndServe(); err != nil {
 		zlog.Error("unable to start http server")
 		return
 	}
-
+	// <-done
+	// zlog.Info("server stopped")
 }
