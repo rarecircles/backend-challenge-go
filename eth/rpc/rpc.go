@@ -5,12 +5,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"go.uber.org/zap"
 	"io/ioutil"
 	"math/big"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"go.uber.org/zap"
 
 	"github.com/rarecircles/backend-challenge-go/eth"
 	"github.com/tidwall/gjson"
@@ -21,6 +22,8 @@ var ErrFalseResp = errors.New("false response")
 type Option func(*Client)
 
 // TODO: refactor to use mux rpc
+
+// It's easier to write cases if client methods were defined in an interface. Mocks can be created..
 type Client struct {
 	URL     string
 	chainID *big.Int

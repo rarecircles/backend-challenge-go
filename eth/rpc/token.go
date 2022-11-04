@@ -6,6 +6,7 @@ import (
 	"github.com/rarecircles/backend-challenge-go/eth"
 )
 
+// this method can be re-thought. So many API calls in one method.
 func (c *Client) GetERC20(tokenAddr eth.Address) (*eth.Token, error) {
 	token := &eth.Token{Address: tokenAddr}
 	var err error
@@ -13,13 +14,13 @@ func (c *Client) GetERC20(tokenAddr eth.Address) (*eth.Token, error) {
 		return nil, fmt.Errorf("unable to resolve name: %w", err)
 	}
 	if token.Symbol, token.IsEmptySymbol, err = c.resolveSymbol(tokenAddr); err != nil {
-		return nil, fmt.Errorf("unable to resolve name: %w", err)
+		return nil, fmt.Errorf("unable to resolve symbol: %w", err)
 	}
 	if token.TotalSupply, token.IsEmptyTotalSupply, err = c.resolveTotalSupply(tokenAddr); err != nil {
-		return nil, fmt.Errorf("unable to resolve name: %w", err)
+		return nil, fmt.Errorf("unable to resolve total supply: %w", err)
 	}
 	if token.Decimals, token.IsEmptyDecimal, err = c.resolveDecimal(tokenAddr); err != nil {
-		return nil, fmt.Errorf("unable to resolve name: %w", err)
+		return nil, fmt.Errorf("unable to resolve decimals: %w", err)
 	}
 
 	return token, nil

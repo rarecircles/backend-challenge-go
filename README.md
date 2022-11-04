@@ -103,3 +103,11 @@ To start a local server run:
 ```
 go run ./cmd/challenge
 ```
+
+### Run tests
+
+To run test cases
+
+```
+go test ./...
+```

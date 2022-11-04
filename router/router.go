@@ -16,8 +16,6 @@ func InitRouter(opt Options) http.Handler {
 	h := http.NewServeMux()
 	router := mux.NewRouter()
 
-	router.HandleFunc("/ping", handler.Ping()).Methods("GET")
-
 	router.HandleFunc("/tokens", handler.GetTokensInfo(opt.Dependencies.TokenService)).Methods("GET")
 
 	h.Handle("/", router)

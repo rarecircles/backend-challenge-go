@@ -10,19 +10,6 @@ import (
 	"github.com/rarecircles/backend-challenge-go/views"
 )
 
-func Ping() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		body, err := json.Marshal("pong")
-		if err != nil {
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write(body)
-	}
-}
-
 func GetTokensInfo(service service.TokenService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		param := r.URL.Query().Get("q")
