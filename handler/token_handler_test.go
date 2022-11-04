@@ -44,7 +44,6 @@ func TestHandlerSuite(t *testing.T) {
 }
 
 func (suite *tokenHandlerTestSuite) TestGetTokenInfo() {
-	var totalSuppy = big.NewInt(1000000000)
 	testCases := []struct {
 		name               string
 		queryParam         string
@@ -61,26 +60,26 @@ func (suite *tokenHandlerTestSuite) TestGetTokenInfo() {
 					Symbol:      "RCI",
 					Address:     []byte("0xdbf1344a0ff21bc098eb9ad4eef7de0f9722c02"),
 					Decimals:    19,
-					TotalSupply: totalSuppy,
+					TotalSupply: big.NewInt(1000000000),
 				},
 			},
 			expectedStatusCode: 200,
 		},
 		{
-			name: "test with valid data",
+			name: "test with no query param",
 			mockedData: []eth.Token{
 				{
 					Name:        "rarecircles",
 					Symbol:      "RCI",
 					Address:     []byte("0xdbf1344a0ff21bc098eb9ad4eef7de0f9722c02"),
 					Decimals:    18,
-					TotalSupply: totalSuppy,
+					TotalSupply: big.NewInt(1000000000),
 				},
 			},
 			expectedStatusCode: 400,
 		},
 		{
-			name:               "test with valid data",
+			name:               "test with service error",
 			queryParam:         "rare",
 			mockedErr:          errors.New(""),
 			expectedStatusCode: 500,
@@ -88,6 +87,7 @@ func (suite *tokenHandlerTestSuite) TestGetTokenInfo() {
 	}
 
 	for _, t := range testCases {
+		fmt.Printf("Running test: %v", t.name)
 		suite.service.On("GetTokensInfo", mock.Anything).Return(t.mockedData, t.mockedErr).Once()
 
 		endpoint := fmt.Sprintf("/tokens?q=%v", t.queryParam)
