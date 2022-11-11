@@ -39,6 +39,7 @@ func startServer() {
 	}
 
 	path := os.Getenv("datapath")
+	app.db = createInMemoryDb()
 	app.seedDataAsync(path)
 
 	srv := &http.Server{

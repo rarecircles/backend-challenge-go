@@ -17,8 +17,8 @@ Design an API endpoint that provides token information based on token title.
 - feel free to add more features if you like!
 
 #### Notes
-- you have a list of tokens accounts defined inthe `addresses.jsonl` file that should be used as a seed to your application
-- we have included a `eth` lirbary that should help with any decoding and rpc calls
+- you have a list of tokens accounts defined in the `addresses.jsonl` file that should be used as a seed to your application
+- we have included a `eth` library that should help with any decoding and rpc calls
 
 #### Sample responses
 
@@ -30,7 +30,7 @@ These responses are meant to provide guidance. The exact values can vary based o
 
 ```json
 {
-  "tokesn": [
+  "tokens": [
     {
       "name": "RareCircles",
       "symbol": "RCI",
@@ -95,11 +95,13 @@ You are going to need:
 
 - `Git`
 - `go`
+- `ethKey` environment variable and can be gotten by creating on this site https://www.alchemy.com/
+- `datapath` environment variable path where the file containing json of eth addresses
 
 ### Starting the application
 
 To start a local server run:
 
 ```
-go run ./cmd/challenger
+go run ./cmd/challenge
 ```

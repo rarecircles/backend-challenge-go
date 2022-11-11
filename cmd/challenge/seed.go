@@ -19,6 +19,10 @@ type tokenResponse struct {
 	TotalSupply int64  `json:"totalSupply"`
 }
 
+// seedDataAsync takes in a path that contains a file with json data of addresses
+// stores in an in memory database
+//
+//line by line, retrieves information about the addresses
 func (app *application) seedDataAsync(path string) {
 	b, err := os.ReadFile(path)
 	if err != nil {
@@ -26,7 +30,6 @@ func (app *application) seedDataAsync(path string) {
 	}
 	f := strings.NewReader(string(b))
 	dec := json.NewDecoder(f)
-	app.db = createInMemoryDb()
 	for {
 		tA := tokenAddress{}
 		if err := dec.Decode(&tA); err != nil {
@@ -77,23 +80,10 @@ func writeOneData(app *application, tr tokenResponse) {
 	txn.Commit()
 }
 
+// getData queries a database to retrieve token information for query parameter that is prefixed by
+// name input
 func getData(app *application, name string) []tokenResponse {
-	resp := make([]tokenResponse, 0)
-	// Create read-only transaction
-	txn := app.db.Txn(false)
-	defer txn.Abort()
-
-	itr, err := txn.Get("address", "Name_prefix", name)
-	if err != nil {
-		app.logger.Error("Unable to get record in database", zap.Error(err))
-	}
-
-	for obj := itr.Next(); obj != nil; obj = itr.Next() {
-		p := obj.(tokenResponse)
-		resp = append(resp, p)
-	}
-
-	return resp
+	return getDataFromDatabase(app, name)
 }
 
 func createInMemoryDb() *memdb.MemDB {
@@ -125,4 +115,23 @@ func createInMemoryDb() *memdb.MemDB {
 	}
 
 	return db
+}
+
+func getDataFromDatabase(app *application, name string) []tokenResponse {
+	// Create read-only transaction
+	txn := app.db.Txn(false)
+	defer txn.Abort()
+
+	itr, err := txn.Get("address", "Name_prefix", name)
+	if err != nil {
+		app.logger.Error("Unable to get record in database", zap.Error(err))
+	}
+
+	resp := make([]tokenResponse, 0)
+	for obj := itr.Next(); obj != nil; obj = itr.Next() {
+		p := obj.(tokenResponse)
+		resp = append(resp, p)
+	}
+	return resp
+
 }

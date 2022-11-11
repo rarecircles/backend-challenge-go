@@ -13,6 +13,7 @@ func setupTest() *application {
 	}
 
 	path := os.Getenv("datapath")
+	app.db = createInMemoryDb()
 	app.seedDataAsync(path)
 	return app
 }

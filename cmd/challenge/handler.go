@@ -6,8 +6,6 @@ import (
 	"net/http"
 )
 
-const defaultError = "Error occurred processing request"
-
 type response struct {
 	Tokens []tokenResponse `json:"tokens"`
 }
