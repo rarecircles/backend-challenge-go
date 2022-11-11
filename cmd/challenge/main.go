@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/hashicorp/go-memdb"
-	"github.com/julienschmidt/httprouter"
 	"go.uber.org/zap"
 	"net/http"
 	"os"
@@ -55,10 +54,4 @@ func startServer() {
 	if err != nil {
 		app.logger.Fatal(err.Error())
 	}
-}
-
-func (app *application) routes() *httprouter.Router {
-	router := httprouter.New()
-	router.GET("/tokens", app.tokens)
-	return router
 }

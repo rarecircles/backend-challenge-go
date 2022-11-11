@@ -11,6 +11,8 @@ import (
 	"strings"
 )
 
+const addressTable = "address"
+
 type tokenResponse struct {
 	Name        string `json:"name"`
 	Symbol      string `json:"symbol"`
@@ -27,6 +29,7 @@ func (app *application) seedDataAsync(path string) {
 	b, err := os.ReadFile(path)
 	if err != nil {
 		app.logger.Fatal("Unable to read file", zap.Error(err))
+		return
 	}
 	f := strings.NewReader(string(b))
 	dec := json.NewDecoder(f)
@@ -36,20 +39,20 @@ func (app *application) seedDataAsync(path string) {
 			if err == io.EOF {
 				break
 			}
-			app.logger.Fatal("failed to get address in file", zap.Error(err))
+			app.logger.Error("failed to get address in file", zap.Error(err))
 			panic(err)
 		}
 		tR := make(chan tokenResponse)
 		go func(address, url string) {
 			add, err := eth.NewAddress(address)
 			if err != nil {
-				app.logger.Fatal("Unable to create eth address", zap.Error(err))
+				app.logger.Error("Unable to create eth address", zap.Error(err))
 				return
 			}
 			client := rpc.NewClient(url)
 			detail, err := client.GetERC20(add)
 			if err != nil {
-				app.logger.Fatal("Unable to get token detail", zap.Error(err))
+				app.logger.Error("Unable to get token detail", zap.Error(err))
 				return
 			}
 
@@ -72,7 +75,7 @@ func (app *application) seedDataAsync(path string) {
 
 func writeOneData(app *application, tr tokenResponse) {
 	txn := app.db.Txn(true)
-	if err := txn.Insert("address", tr); err != nil {
+	if err := txn.Insert(addressTable, tr); err != nil {
 		app.logger.Error("Unable to insert record", zap.Error(err))
 	}
 
@@ -90,8 +93,8 @@ func createInMemoryDb() *memdb.MemDB {
 	// Create the DB schema
 	schema := &memdb.DBSchema{
 		Tables: map[string]*memdb.TableSchema{
-			"address": &memdb.TableSchema{
-				Name: "address",
+			addressTable: &memdb.TableSchema{
+				Name: addressTable,
 				Indexes: map[string]*memdb.IndexSchema{
 					"id": &memdb.IndexSchema{
 						Name:    "id",
@@ -122,7 +125,7 @@ func getDataFromDatabase(app *application, name string) []tokenResponse {
 	txn := app.db.Txn(false)
 	defer txn.Abort()
 
-	itr, err := txn.Get("address", "Name_prefix", name)
+	itr, err := txn.Get(addressTable, "Name_prefix", strings.ToLower(name))
 	if err != nil {
 		app.logger.Error("Unable to get record in database", zap.Error(err))
 	}
