@@ -1,0 +1,32 @@
+version: '2'
+services: 
+  challenge-service:
+    depends_on:
+      - postgres
+    ports:
+      - 8080:8080
+    build:
+      context: .
+      dockerfile: ./cmd/challenge/Dockerfile
+    command: modd
+    env_file: .env.dev
+    volumes:
+      - ./:/app/
+    networks:
+      - rarecircles
+  postgres:
+    ports:
+      - 5432:5432
+    image: postgres:14.1-alpine
+    restart: always
+    env_file: .env.dev
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    networks:
+      - rarecircles
+volumes:
+  postgres:
+    driver: local
+networks:
+  rarecircles:
+
