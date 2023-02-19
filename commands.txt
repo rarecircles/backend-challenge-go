@@ -1,0 +1,3 @@
+docker run --name some-postgres -e POSTGRES_PASSWORD=secret -d -p 6000:5432 postgres
+
+psql -d postgres -U postgres -W
