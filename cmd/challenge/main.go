@@ -51,7 +51,6 @@ func main() {
 
 	zlog.Info("Successfully connected to DB")
 
-	// apiKey := "RtBNZI7jboJBSVutqQidtcUE8Nbw2M6p"
 	go seedDB(rpcURL, apiKey, db)
 
 	http.HandleFunc("/tokens", tokenEndpoint)
