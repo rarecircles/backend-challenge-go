@@ -45,9 +45,10 @@ psql -d postgres -U postgres -W
 ### running the project
 
 ```
-go run ./cmd/challenge
+go run ./cmd/challenge --api-key <alchemy_api_key>
 ```
 
+- please provide your own alchemy api key as a flag to the program
 - if running for the first time the database will seed in the background. You should be able to access endpoints while this is happening.
   - *note: if you stop the application and run it again, the application will not seed if there are any records in the tokens database*
 - test out the endpoint by going to ```localhost:8080/tokens?q=<token_name>```

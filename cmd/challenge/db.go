@@ -23,7 +23,7 @@ func DBConnect() *sql.DB {
 	return db
 }
 
-func seedDB(rpcURL string, db *sql.DB) {
+func seedDB(rpcURL string, apiKey string, db *sql.DB) {
 	isSeeded := checkIfSeeded(db)
 
 	if !isSeeded {
@@ -33,9 +33,6 @@ func seedDB(rpcURL string, db *sql.DB) {
 
 		var addrs []string 
 		addrs = readJsonString(string(jsonContent))
-
-		// TODO: move api key to a flag
-		apiKey := "RtBNZI7jboJBSVutqQidtcUE8Nbw2M6p"
 		client := rpc.NewClient(rpcURL + apiKey)
 
 		addTokensToDB(addrs, client, db)
@@ -101,8 +98,9 @@ func queryToken(queryName string, db *sql.DB) []*TokenModel {
 	for results.Next() {
 		var t TokenModel
 
+		id := 0
 		err = results.Scan(
-			&t.ID, 
+			&id,
 			&t.Name,
 			&t.Symbol,
 			&t.Address,
