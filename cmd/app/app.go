@@ -4,11 +4,17 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/rarecircles/backend-challenge-go/cmd/dao"
+	"github.com/rarecircles/backend-challenge-go/cmd/helper"
 	"github.com/rarecircles/backend-challenge-go/cmd/model"
+	"github.com/rarecircles/backend-challenge-go/eth"
+	"github.com/rarecircles/backend-challenge-go/eth/rpc"
+	"github.com/rarecircles/backend-challenge-go/logging"
+	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
 	"os"
+	"sync"
 )
 
 type App struct {
@@ -19,6 +25,7 @@ type App struct {
 var app *App
 
 func NewApp() *App {
+
 	db := createDbConnection()
 	runMigration(db)
 
@@ -31,7 +38,7 @@ func NewApp() *App {
 }
 
 func runMigration(db *gorm.DB) {
-	err := db.AutoMigrate(&model.TokenDTO{})
+	err := db.AutoMigrate(&model.Token{})
 	if err != nil {
 		errorMsg := fmt.Sprintf("could not run the migration %v", err)
 		panic(errorMsg)
@@ -72,5 +79,68 @@ func (a *App) HandleRequests() {
 	if app == nil {
 		app = NewApp()
 	}
+	setup()
 	log.Println("inside app")
+}
+
+// This method read the address, extract tokens from address and load it to DB
+func setup() {
+	zLog := logging.MustCreateLoggerWithServiceName("challenge")
+
+	rpcURL := getEnv("RPC_CURL", "")
+	rpcTOKEN := getEnv("RPC_TOKEN", "")
+	addChannel := make(chan string, 10)
+	tokenChannel := make(chan model.TokenDTO, 10)
+
+	addLoader := helper.NewAddLoader(addChannel)
+	rpcClient := rpc.NewClient(rpcURL + rpcTOKEN)
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+	// scan and load address
+	go func() {
+		defer wg.Done()
+		scanAddress(addLoader, zLog)
+	}()
+	// Extract tokens from address
+	go func() {
+		defer wg.Done()
+		getTokenData(rpcClient, addChannel, tokenChannel, zLog)
+	}()
+
+	//searchEngine, err := search_engine.NewElasticsearchIngest(tokenDataChannel, zLog)
+	//if err != nil {
+	//	zLog.Fatal(err.Error())
+	//}
+
+	wg.Wait()
+}
+
+func getTokenData(client *rpc.Client, addChannel chan string, tokenChannel chan model.TokenDTO, zLog *zap.Logger) {
+	for add := range addChannel {
+		addr, err := eth.NewAddress(add)
+		if err != nil {
+			zLog.Error("eth address doesn't get created " + err.Error())
+		}
+
+		ethToken, err := client.GetERC20(addr)
+		if err != nil {
+			zLog.Error("unable to fetch ERC20: " + err.Error())
+		}
+
+		tokenChannel <- model.TokenDTO{
+			Name:        ethToken.Name,
+			Symbol:      ethToken.Symbol,
+			Address:     ethToken.Address.String(),
+			Decimals:    ethToken.Decimals,
+			TotalSupply: ethToken.TotalSupply,
+		}
+	}
+}
+
+func scanAddress(loader helper.IAddLoader, zLog *zap.Logger) {
+	err := loader.ScanAndLoadAddressFile()
+	if err != nil {
+		zLog.Fatal(err.Error())
+	}
 }
