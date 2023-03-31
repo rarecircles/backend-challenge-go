@@ -5,6 +5,7 @@ import "github.com/rarecircles/backend-challenge-go/cmd/model"
 type TokenInterface interface {
 	GetTokens(q string) (model.TokensDTO, error)
 	InsertTokens(tokens model.Tokens) error
+	GetFirstToken() (model.Token, error)
 }
 
 func (d *Dao) GetTokens(q string) (apiTokens model.TokensDTO, err error) {
@@ -24,4 +25,13 @@ func (d *Dao) InsertTokens(tokens model.Tokens) (err error) {
 	}
 
 	return nil
+}
+
+func (d *Dao) GetFirstToken() (model.Token, error) {
+
+	var retrievedToken model.Token
+	if err := d.DB.First(&retrievedToken).Error; err != nil {
+		return retrievedToken, err
+	}
+	return retrievedToken, nil
 }

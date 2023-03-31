@@ -13,7 +13,6 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"net/http"
-	"sync"
 )
 
 type App struct {
@@ -86,25 +85,20 @@ func setup() {
 	addLoader := helper.NewAddLoader(addChannel)
 	rpcClient := rpc.NewClient(rpcURL + rpcTOKEN)
 
-	var wg sync.WaitGroup
-	wg.Add(3)
 	// scan and load address
 	go func() {
-		defer wg.Done()
 		scanAddress(addLoader, zLog)
+		defer close(addChannel)
 	}()
 	// Extract tokens from address
 	go func() {
-		defer wg.Done()
 		helper.ParseTokenData(rpcClient, addChannel, tokenChannel, zLog)
+		defer close(tokenChannel)
 	}()
 
 	go func() {
-		defer wg.Done()
-		helper.SeedDB(app.DAO, tokenChannel)
+		helper.SeedDB(app.DAO, tokenChannel, zLog)
 	}()
-
-	wg.Wait()
 }
 
 func scanAddress(loader helper.IAddLoader, zLog *zap.Logger) {

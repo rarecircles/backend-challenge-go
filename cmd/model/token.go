@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"math/big"
 	"time"
 )
@@ -10,7 +11,7 @@ type Token struct {
 	Symbol      string    `json:"symbol"`
 	Address     string    `json:"address"`
 	Decimals    uint64    `json:"decimals"`
-	TotalSupply *big.Int  `json:"total_supply" gorm:"type:numeric"`
+	TotalSupply string    `json:"total_supply" gorm:"type:numeric"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 	DeletedAt   time.Time `json:"deleted_at"`
@@ -19,12 +20,18 @@ type Token struct {
 type Tokens []Token
 
 func (t Token) ConvertTokenToApiTokens() TokenDTO {
+
+	totalSupply, ok := new(big.Int).SetString(t.TotalSupply, 10)
+	if !ok {
+		fmt.Println("unable to convert")
+	}
+
 	return TokenDTO{
 		Name:        t.Name,
 		Symbol:      t.Symbol,
 		Address:     t.Address,
 		Decimals:    t.Decimals,
-		TotalSupply: t.TotalSupply,
+		TotalSupply: totalSupply,
 	}
 }
 
