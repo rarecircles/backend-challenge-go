@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/rarecircles/backend-challenge-go/cmd/dao"
+	"github.com/rarecircles/backend-challenge-go/cmd/handler"
 	"github.com/rarecircles/backend-challenge-go/cmd/helper"
 	"github.com/rarecircles/backend-challenge-go/cmd/model"
 	"github.com/rarecircles/backend-challenge-go/eth/rpc"
@@ -70,6 +71,7 @@ func (a *App) HandleRequests() {
 	}
 	setup()
 	log.Println("inside app")
+	app.Router.HandleFunc("/tokens", handler.GetTokens(app.DAO)).Methods(http.MethodGet)
 	log.Fatal(http.ListenAndServe(":10000", app.Router))
 }
 
