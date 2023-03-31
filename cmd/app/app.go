@@ -6,14 +6,13 @@ import (
 	"github.com/rarecircles/backend-challenge-go/cmd/dao"
 	"github.com/rarecircles/backend-challenge-go/cmd/helper"
 	"github.com/rarecircles/backend-challenge-go/cmd/model"
-	"github.com/rarecircles/backend-challenge-go/eth"
 	"github.com/rarecircles/backend-challenge-go/eth/rpc"
 	"github.com/rarecircles/backend-challenge-go/logging"
 	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
-	"os"
+	"net/http"
 	"sync"
 )
 
@@ -57,22 +56,13 @@ func createDbConnection() *gorm.DB {
 
 func createDSN() string {
 
-	host := getEnv("DB_HOST", "database")
-	user := getEnv("DB_USER", "test_rare_circle_user")
-	password := getEnv("DB_PASSWORD", "123")
-	dbname := getEnv("DB_NAME", "rare_circle")
-	port := getEnv("DB_PORT", "5432")
+	host := helper.GetEnv("DB_HOST", "localhost")
+	user := helper.GetEnv("DB_USER", "shamsazad")
+	password := helper.GetEnv("DB_PASSWORD", "123")
+	dbname := helper.GetEnv("DB_NAME", "rare_circle")
+	port := helper.GetEnv("DB_PORT", "5432")
 
 	return fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable", user, password, host, port, dbname)
-}
-
-func getEnv(key string, defaultValue string) string {
-	configValue := os.Getenv(key)
-	if configValue == "" {
-		return defaultValue
-	} else {
-		return configValue
-	}
 }
 
 func (a *App) HandleRequests() {
@@ -81,14 +71,15 @@ func (a *App) HandleRequests() {
 	}
 	setup()
 	log.Println("inside app")
+	log.Fatal(http.ListenAndServe(":10000", app.Router))
 }
 
 // This method read the address, extract tokens from address and load it to DB
 func setup() {
 	zLog := logging.MustCreateLoggerWithServiceName("challenge")
 
-	rpcURL := getEnv("RPC_CURL", "")
-	rpcTOKEN := getEnv("RPC_TOKEN", "")
+	rpcURL := helper.GetEnv("RPC_CURL", "https://eth-mainnet.alchemyapi.io/v2/")
+	rpcTOKEN := helper.GetEnv("RPC_TOKEN", "sscKIY7xv-5uHTJtHVRdmpS-y-Q3rBVA")
 	addChannel := make(chan string, 10)
 	tokenChannel := make(chan model.TokenDTO, 10)
 
@@ -96,7 +87,7 @@ func setup() {
 	rpcClient := rpc.NewClient(rpcURL + rpcTOKEN)
 
 	var wg sync.WaitGroup
-	wg.Add(2)
+	wg.Add(3)
 	// scan and load address
 	go func() {
 		defer wg.Done()
@@ -105,37 +96,15 @@ func setup() {
 	// Extract tokens from address
 	go func() {
 		defer wg.Done()
-		getTokenData(rpcClient, addChannel, tokenChannel, zLog)
+		helper.ParseTokenData(rpcClient, addChannel, tokenChannel, zLog)
 	}()
 
-	//searchEngine, err := search_engine.NewElasticsearchIngest(tokenDataChannel, zLog)
-	//if err != nil {
-	//	zLog.Fatal(err.Error())
-	//}
+	go func() {
+		defer wg.Done()
+		helper.SeedDB(app.DAO, tokenChannel)
+	}()
 
 	wg.Wait()
-}
-
-func getTokenData(client *rpc.Client, addChannel chan string, tokenChannel chan model.TokenDTO, zLog *zap.Logger) {
-	for add := range addChannel {
-		addr, err := eth.NewAddress(add)
-		if err != nil {
-			zLog.Error("eth address doesn't get created " + err.Error())
-		}
-
-		ethToken, err := client.GetERC20(addr)
-		if err != nil {
-			zLog.Error("unable to fetch ERC20: " + err.Error())
-		}
-
-		tokenChannel <- model.TokenDTO{
-			Name:        ethToken.Name,
-			Symbol:      ethToken.Symbol,
-			Address:     ethToken.Address.String(),
-			Decimals:    ethToken.Decimals,
-			TotalSupply: ethToken.TotalSupply,
-		}
-	}
 }
 
 func scanAddress(loader helper.IAddLoader, zLog *zap.Logger) {

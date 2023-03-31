@@ -20,7 +20,7 @@ func NewAddLoader(addressOutput chan string) IAddLoader {
 }
 
 func (a AddLoader) ScanAndLoadAddressFile() error {
-	filePath := os.Getenv("ADDRESS_FILE_PATH")
+	filePath := GetEnv("ADDRESS_FILE_PATH", "data/addresses.jsonl")
 
 	file, err := os.Open(filePath)
 	if err != nil {

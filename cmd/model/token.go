@@ -10,7 +10,7 @@ type Token struct {
 	Symbol      string    `json:"symbol"`
 	Address     string    `json:"address"`
 	Decimals    uint64    `json:"decimals"`
-	TotalSupply *big.Int  `json:"total_supply"`
+	TotalSupply *big.Int  `json:"total_supply" gorm:"type:numeric"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 	DeletedAt   time.Time `json:"deleted_at"`
