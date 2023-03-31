@@ -10,7 +10,7 @@ type TokenInterface interface {
 
 func (d *Dao) GetTokens(q string) (apiTokens model.TokensDTO, err error) {
 	var tokens model.Tokens
-	query := "%" + q + "%"
+	query := q + "%"
 	if err = d.DB.Where("name LIKE ?", query).Find(&tokens).Error; err != nil {
 		return apiTokens, err
 	}
