@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"errors"
 	"github.com/rarecircles/backend-challenge-go/cmd/dao"
 	"github.com/rarecircles/backend-challenge-go/cmd/model"
 	"go.uber.org/zap"
@@ -10,7 +11,7 @@ import (
 func SeedDB(dao dao.DaoInterface, tokenData chan model.TokenDTO, log *zap.Logger) {
 	var tokens []model.Token
 
-	if isDBSeeded(dao) {
+	if isDBSeeded(dao, log) {
 		log.Info("DB is already seeded")
 	} else {
 		for tokenData := range tokenData {
@@ -31,10 +32,13 @@ func SeedDB(dao dao.DaoInterface, tokenData chan model.TokenDTO, log *zap.Logger
 	}
 }
 
-func isDBSeeded(dao dao.DaoInterface) bool {
-	token, _ := dao.GetFirstToken()
+func isDBSeeded(dao dao.DaoInterface, log *zap.Logger) bool {
+	token, err := dao.GetFirstToken()
 	if token.Name != "" {
 		return true
+	}
+	if err.Error() != errors.New("record not found").Error() {
+		log.Fatal("unable to fetch token", zap.String("error", err.Error()))
 	}
 	return false
 }
