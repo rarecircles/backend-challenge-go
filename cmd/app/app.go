@@ -56,8 +56,8 @@ func createDbConnection() *gorm.DB {
 
 func createDSN() string {
 
-	host := helper.GetEnv("DB_HOST", "localhost")
-	user := helper.GetEnv("DB_USER", "shamsazad")
+	host := helper.GetEnv("DB_HOST", "database")
+	user := helper.GetEnv("DB_USER", "test_rare_circle_user")
 	password := helper.GetEnv("DB_PASSWORD", "123")
 	dbname := helper.GetEnv("DB_NAME", "rare_circle")
 	port := helper.GetEnv("DB_PORT", "5432")
