@@ -49,10 +49,10 @@ func (mr *MockDaoInterfaceMockRecorder) InsertTokens(arg0 interface{}) *gomock.C
 }
 
 // GetTokens mocks base method.
-func (m *MockDaoInterface) GetTokens(arg0 string) (models.TokenResponse, error) {
+func (m *MockDaoInterface) GetTokens(arg0 string) (models.TokensDTO, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTokens")
-	ret0, _ := ret[0].(models.TokenResponse)
+	ret0, _ := ret[0].(models.TokensDTO)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

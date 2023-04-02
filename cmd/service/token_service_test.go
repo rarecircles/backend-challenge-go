@@ -15,20 +15,23 @@ func Test_GetTokens(t *testing.T) {
 
 	testCases := []struct {
 		name          string
-		tokens        models.TokensDTO
+		tokens        models.TokenResponse
 		mockShop      func(mock *mocks.MockDaoInterface)
 		expectedError error
 	}{
 		{
 			name: "Happy path, tokens retrieved",
-			tokens: models.TokensDTO{
-				{
-					Name:     "BitCoin",
-					Symbol:   "BTC",
-					Address:  "0xdbf1344a0ff21bc098eb9ad4eef7de0f9722c02b",
-					Decimals: 18,
+			tokens: models.TokenResponse{
+				Tokens: models.TokensDTO{
+					{
+						Name:     "BitCoin",
+						Symbol:   "BTC",
+						Address:  "0xdbf1344a0ff21bc098eb9ad4eef7de0f9722c02b",
+						Decimals: 18,
+					},
 				},
 			},
+
 			mockShop: func(mock *mocks.MockDaoInterface) {
 				mock.EXPECT().GetTokens("Bit").Return(fixtures.LoadTokensFixture("one_token"), nil)
 			},
