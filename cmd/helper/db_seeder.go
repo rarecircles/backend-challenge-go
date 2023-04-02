@@ -5,7 +5,6 @@ import (
 	"github.com/rarecircles/backend-challenge-go/cmd/dao"
 	"github.com/rarecircles/backend-challenge-go/cmd/model"
 	"go.uber.org/zap"
-	"math/big"
 )
 
 func SeedDB(dao dao.DaoInterface, tokenData chan model.TokenDTO, log *zap.Logger) {
@@ -19,7 +18,7 @@ func SeedDB(dao dao.DaoInterface, tokenData chan model.TokenDTO, log *zap.Logger
 				Name:        tokenData.Name,
 				Symbol:      tokenData.Symbol,
 				Address:     tokenData.Address,
-				TotalSupply: big.NewInt(tokenData.TotalSupply.Int64()).String(),
+				TotalSupply: tokenData.TotalSupply.String(),
 				Decimals:    tokenData.Decimals,
 			}
 			tokens = append(tokens, token)

@@ -98,6 +98,7 @@ func setup() {
 		defer close(tokenChannel)
 	}()
 
+	// Seed database
 	go func() {
 		helper.SeedDB(app.DAO, tokenChannel, zLog)
 	}()
