@@ -13,7 +13,7 @@ func GetTokens(DAO dao.DaoInterface) func(w http.ResponseWriter, r *http.Request
 		q := r.URL.Query().Get("q")
 		w.Header().Set("Content-Type", "application/json")
 
-		tokensDTO, err := service.GetTokens(DAO, q)
+		tokensResponse, err := service.GetTokens(DAO, q)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			errorMsg := InitializeError(err.Error())
@@ -21,7 +21,7 @@ func GetTokens(DAO dao.DaoInterface) func(w http.ResponseWriter, r *http.Request
 			return
 		}
 
-		jsonResp, err := json.Marshal(tokensDTO)
+		jsonResp, err := json.Marshal(tokensResponse)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			errorMsg := InitializeError(err.Error())

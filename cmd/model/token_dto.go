@@ -10,4 +10,8 @@ type TokenDTO struct {
 	TotalSupply *big.Int `json:"total_supply"`
 }
 
+type TokenResponse struct {
+	Tokens TokensDTO `json:"tokens"`
+}
+
 type TokensDTO []TokenDTO

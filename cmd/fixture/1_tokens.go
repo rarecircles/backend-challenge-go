@@ -40,12 +40,14 @@ func init() {
 	}
 }
 
-func LoadTokensFixture(name string) model.TokensDTO {
+func LoadTokensFixture(name string) model.TokenResponse {
 	fixture, ok := tokensFixture[name]
 	if !ok {
 		log.Fatalf("No fixture of type %T with name '%v' found", fixture, name)
 	}
 	newTokens := deepcopy.Copy(fixture).(model.TokensDTO)
-
-	return newTokens
+	tokenResponse := model.TokenResponse{
+		Tokens: newTokens,
+	}
+	return tokenResponse
 }
