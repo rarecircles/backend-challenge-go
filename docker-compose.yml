@@ -1,0 +1,22 @@
+version: '3'
+services:
+  rare-circle-client:
+    container_name: rare-circle-api-client
+    image: app-dev
+    depends_on:
+      - database
+    build:
+      dockerfile: Dockerfile
+      context: .
+    ports:
+      - "10000:10000"
+  database:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./scripts/db:/docker-entrypoint-initdb.d/

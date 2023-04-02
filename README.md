@@ -1,5 +1,59 @@
 # RareCircles Coding Challenge
 
+## Assumptions
+The eth rpc client is very slow, and it takes more than a second sometimes to 
+fetch details of a single token using rpc client, so I paid more attention to 
+have cleaner and more performant code that seeding db with 14k. 
+I just seeded 50 token address to the database and those addresses are present in
+`data/addresses_i.json` file. If we want to add more tokens in the DB,
+we will copy more address to the file.
+
+### Prerequisite
+* **Docker** - install and run docker. `brew install --cask docker`
+* **Golang** - use `brew` to install golang
+
+### How to run assignment
+This is a dockerized app, to run this application make sure you have docker installed and running on your local system. Use the `docker-compose.yml` file in the project to run it.
+* `cd` to project directory
+* Run this command in terminal to up and start the service
+* `docker-compose up --build`
+* Once the service is up and running, open `postman` and call the `GET` endpoint. Read [API Specs](#api-specs) for more information
+
+### API Specs
+This project has one end-point.
+
+#### `GET /tokens `
+**Path** `http://localhost:10000/tokens?q="Year"` </br>
+Endpoint to fetch a token details, by providing full/partial token title in query parameter.
+The search is **case-insensitive**
+```json
+{
+  "tokens": [
+    {
+      "name": "Yearn Finance Network Token",
+      "symbol": "YFIXT",
+      "address": "22f4a547ca569ae4dfee96c7aeff37884e25b1cf",
+      "decimals": 18,
+      "total_supply": 99988412498244662807623413580
+    },
+    {
+      "name": "Yearn Utrade Finance",
+      "symbol": "YUF",
+      "address": "dbf1344a0ff21bc098eb9ad4eef7de0f9722c02b",
+      "decimals": 18,
+      "total_supply": 5000000000000000000000000
+    }
+  ]
+}
+```
+### What I could have improved, if I had more time
+1) I could have added few more end-points such as searching by address, symbol etc.
+2) I should have leveraged elastic-search for searching instead of db.
+
+### Note
+Please feel free to reach out to me if you want to discuss any part of the code. Developed by @Shams Azad
+
+
 ## Requirements
 
 Design an API endpoint that provides token information based on token title.
