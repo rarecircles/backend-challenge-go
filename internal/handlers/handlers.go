@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/rarecircles/backend-challenge-go/eth"
+	"github.com/rarecircles/backend-challenge-go/internal/models"
 	"github.com/rarecircles/backend-challenge-go/internal/service"
 	"go.uber.org/zap"
 	"net/http"
@@ -27,12 +27,15 @@ func (h H) SearchTokens(c *gin.Context) {
 
 	tokens, err := h.svc.Search(q)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		h.logger.Error("error searching tokens", zap.Error(err))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
 		return
 	}
+	response := searchResponse{}
 	if tokens == nil {
-		c.JSON(http.StatusOK, []eth.Token{})
-		return
+		response.Tokens = []models.Token{}
+	} else {
+		response.Tokens = tokens
 	}
-	c.JSON(http.StatusOK, tokens)
+	c.JSON(http.StatusOK, response)
 }
