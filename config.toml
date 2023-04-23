@@ -1,0 +1,4 @@
+BASE_URL="0.0.0.0" # Base url for the server
+PORT=":8080" # Port to run the server on
+ETH_RPC_URL="https://eth-mainnet.alchemyapi.io/v2/" # Alchemy API url
+ETH_RPC_KEY="" # Alchemy API key

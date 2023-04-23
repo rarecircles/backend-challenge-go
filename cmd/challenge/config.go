@@ -5,7 +5,6 @@ import (
 )
 
 type Config struct {
-	Name              string
 	BaseUrl           string
 	Port              string
 	EthRpcUrl         string
@@ -35,7 +34,6 @@ func setupViper(name string) {
 
 func getFilledConfig() Config {
 	return Config{
-		Name:              viper.GetString("NAME"),
 		BaseUrl:           viper.GetString("BASE_URL"),
 		Port:              viper.GetString("PORT"),
 		EthRpcUrl:         viper.GetString("ETH_RPC_URL"),
