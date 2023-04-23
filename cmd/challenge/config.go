@@ -28,7 +28,7 @@ func setupViper(name string) {
 	viper.ReadInConfig()
 	viper.SetEnvPrefix(name)
 	viper.AutomaticEnv()
-	// NOTE: Configs are either stored in config file without prefix or in env variables with prefix "SERVER_*"
+	// NOTE: Configs are either stored in config file without prefix or in env variables with prefix "name_*"
 	// NOTE: Environment variables have higher priority than the config file
 }
 

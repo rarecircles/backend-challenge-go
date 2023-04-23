@@ -6,16 +6,16 @@ import (
 )
 
 type S struct {
-	r IRedisRepo
-	l *zap.Logger
+	storageRepo iStorageRepo
+	logger      *zap.Logger
 }
 
-func New(l *zap.Logger, repo IRedisRepo) S {
-	s := S{l: l, r: repo}
+func New(l *zap.Logger, storageRepo iStorageRepo) S {
+	s := S{logger: l, storageRepo: storageRepo}
 	return s
 }
 
 func (s S) Search(key string) ([]models.Token, error) {
-	tokens, err := s.r.Search(key)
+	tokens, err := s.storageRepo.Search(key)
 	return tokens, err
 }

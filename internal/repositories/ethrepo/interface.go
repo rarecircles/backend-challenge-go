@@ -5,11 +5,11 @@ import (
 	"github.com/rarecircles/backend-challenge-go/internal/models"
 )
 
-type IEthRepo interface {
+type I interface {
 	GetToken(eth.Address) (models.Token, error)
 }
 
-type IEthRpcClient interface {
+type iEthRpcClient interface {
 	GetERC20(eth.Address) (*eth.Token, error)
 	GetERC721(eth.Address) (*eth.NFT, error)
 	GetERC1155(eth.Address) (*eth.NFT, error)

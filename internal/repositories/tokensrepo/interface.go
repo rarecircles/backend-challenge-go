@@ -2,6 +2,6 @@ package tokensrepo
 
 import "github.com/rarecircles/backend-challenge-go/eth"
 
-type ITokensRepo interface {
+type I interface {
 	ListTokenAddresses() ([]eth.Address, error)
 }

@@ -7,17 +7,17 @@ import (
 )
 
 type Server struct {
-	r *gin.Engine
-	h handlers.Interface
-	l *zap.Logger
+	engine   *gin.Engine
+	handlers handlers.I
+	logger   *zap.Logger
 }
 
-func New(l *zap.Logger, h handlers.Interface) *Server {
+func New(l *zap.Logger, h handlers.I) *Server {
 	router := gin.Default()
 	return &Server{
-		r: router,
-		h: h,
-		l: l,
+		engine:   router,
+		handlers: h,
+		logger:   l,
 	}
 }
 

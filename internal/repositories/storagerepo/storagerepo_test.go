@@ -1,4 +1,4 @@
-package redisrepo
+package storagerepo
 
 import (
 	"errors"
@@ -10,8 +10,8 @@ import (
 	"math/big"
 )
 
-var _ = Describe("Redisrepo", func() {
-	var rr RR
+var _ = Describe("Storagerepo", func() {
+	var rr SR
 	sampleAddress, _ := eth.NewAddress("0xbb5958767c8286bd1f86030e731549498e5323f7")
 	sampleToken := models.Token{
 		Name:         "Netflix",

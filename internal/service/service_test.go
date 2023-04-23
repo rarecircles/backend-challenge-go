@@ -11,7 +11,7 @@ var _ = Describe("Service", func() {
 	var s S
 
 	BeforeEach(func() {
-		s = New(zap.NewNop(), redisRepoMock{})
+		s = New(zap.NewNop(), storageRepoMock{})
 	})
 
 	Describe("Searching", func() {

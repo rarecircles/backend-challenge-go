@@ -5,9 +5,8 @@ import (
 	"github.com/rarecircles/backend-challenge-go/internal/models"
 )
 
-type redisRepoMock struct {
-}
+type storageRepoMock struct{}
 
-func (r redisRepoMock) Search(key string) ([]models.Token, error) {
+func (rrm storageRepoMock) Search(key string) ([]models.Token, error) {
 	return nil, errors.New(key)
 }

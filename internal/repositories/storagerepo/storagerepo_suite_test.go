@@ -1,4 +1,4 @@
-package redisrepo
+package storagerepo
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestRedisrepo(t *testing.T) {
+func TestStoragerepo(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Redisrepo Suite")
+	RunSpecs(t, "Storagerepo Suite")
 }

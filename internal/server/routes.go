@@ -5,10 +5,10 @@ import (
 )
 
 func (s *Server) Routes() *gin.Engine {
-	router := s.r
+	router := s.engine
 
-	router.GET("/", s.h.Up)
-	router.GET("/tokens", s.h.SearchTokens)
+	router.GET("/", s.handlers.Up)
+	router.GET("/tokens", s.handlers.SearchTokens)
 
 	return router
 }

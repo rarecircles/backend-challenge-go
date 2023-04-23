@@ -1,4 +1,4 @@
-package redisrepo
+package storagerepo
 
 import (
 	"errors"
@@ -10,18 +10,18 @@ import (
 	"strconv"
 )
 
-type RR struct {
-	c IRedisClient
-	l *zap.Logger
+type SR struct {
+	redisClient iRedisClient
+	logger      *zap.Logger
 }
 
-func New(l *zap.Logger, c IRedisClient) RR {
-	rr := RR{c: c, l: l}
-	return rr
+func New(l *zap.Logger, c iRedisClient) SR {
+	sr := SR{redisClient: c, logger: l}
+	return sr
 }
 
-func (rr RR) CreateIndex() error {
-	_, err := rr.c.Info()
+func (sr SR) CreateIndex() error {
+	_, err := sr.redisClient.Info()
 	if err == nil {
 		return err // index already exists
 	}
@@ -35,14 +35,14 @@ func (rr RR) CreateIndex() error {
 		AddField(redisearch.NewNumericField("totalSupply"))
 
 	// Create the index with the given schema
-	if err := rr.c.CreateIndex(sc); err != nil {
+	if err := sr.redisClient.CreateIndex(sc); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (rr RR) Store(token models.Token) error {
+func (sr SR) Store(token models.Token) error {
 	// Create a document with an id and given score
 	doc := redisearch.NewDocument(token.Address.String(), 1.0)
 	doc.Set("name", token.Name).
@@ -53,14 +53,14 @@ func (rr RR) Store(token models.Token) error {
 		Set("baseTokenURI", token.BaseTokenURI)
 
 	// Index the document. The API accepts multiple documents at a time
-	if err := rr.c.Index(doc); err != nil {
+	if err := sr.redisClient.Index(doc); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (rr RR) Search(key string) ([]models.Token, error) {
+func (sr SR) Search(key string) ([]models.Token, error) {
 	if key == "" {
 		key = "*"
 	} else {
@@ -68,7 +68,7 @@ func (rr RR) Search(key string) ([]models.Token, error) {
 	}
 
 	// Searching with limit and sorting
-	docs, _, err := rr.c.Search(
+	docs, _, err := sr.redisClient.Search(
 		redisearch.NewQuery(key).
 			Limit(0, 10))
 
@@ -105,13 +105,13 @@ func (rr RR) Search(key string) ([]models.Token, error) {
 	return tokens, nil
 }
 
-func (rr RR) GetAllAddresses() (map[string]bool, error) {
+func (sr SR) GetAllAddresses() (map[string]bool, error) {
 	addresses := make(map[string]bool)
 	offset := 0
 	limit := 10000
 	for {
 		// Searching with limit and sorting
-		docs, count, err := rr.c.Search(
+		docs, count, err := sr.redisClient.Search(
 			redisearch.NewQuery("*").
 				Limit(offset, limit))
 

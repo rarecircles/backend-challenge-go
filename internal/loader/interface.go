@@ -2,11 +2,11 @@ package loader
 
 import "github.com/rarecircles/backend-challenge-go/internal/models"
 
-type ILoader interface {
+type I interface {
 	RunLoader()
 }
 
-type IRedisRepo interface {
+type iStorageRepo interface {
 	Store(models.Token) error
 	GetAllAddresses() (map[string]bool, error)
 }

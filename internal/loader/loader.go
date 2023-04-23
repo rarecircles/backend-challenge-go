@@ -2,57 +2,54 @@ package loader
 
 import (
 	"github.com/rarecircles/backend-challenge-go/eth"
+	"github.com/rarecircles/backend-challenge-go/internal/models"
 	"github.com/rarecircles/backend-challenge-go/internal/repositories/ethrepo"
-	"github.com/rarecircles/backend-challenge-go/internal/repositories/redisrepo"
+	"github.com/rarecircles/backend-challenge-go/internal/repositories/storagerepo"
 	"github.com/rarecircles/backend-challenge-go/internal/repositories/tokensrepo"
 	"go.uber.org/zap"
 	"time"
 )
 
-type Loader struct {
-	ethRepo           ethrepo.IEthRepo
-	redisRepo         IRedisRepo
-	tokensRepo        tokensrepo.ITokensRepo
-	l                 *zap.Logger
+type L struct {
+	ethRepo           ethrepo.I
+	storageRepo       iStorageRepo
+	tokensRepo        tokensrepo.I
+	logger            *zap.Logger
 	refetchDelayHours int
 	numWorkers        int
 }
 
-func New(l *zap.Logger, ethRepo ethrepo.IEthRepo, repo redisrepo.IRedisRepo, tokensRepo tokensrepo.ITokensRepo, numWorkers, refetchDelayHours int) Loader {
-	loader := Loader{l: l, ethRepo: ethRepo, redisRepo: repo, tokensRepo: tokensRepo, numWorkers: numWorkers, refetchDelayHours: refetchDelayHours}
+func New(l *zap.Logger, ethRepo ethrepo.I, storageRepo storagerepo.I, tokensRepo tokensrepo.I, numWorkers, refetchDelayHours int) L {
+	loader := L{logger: l, ethRepo: ethRepo, storageRepo: storageRepo, tokensRepo: tokensRepo, numWorkers: numWorkers, refetchDelayHours: refetchDelayHours}
 	return loader
 }
 
-func (l Loader) loadToken(semaphore <-chan bool, address eth.Address) {
-	defer func() {
-		<-semaphore
-	}()
+func (l L) loadToken(address eth.Address) (models.Token, error) {
 	for {
 		token, err := l.ethRepo.GetToken(address)
 		if err != nil {
 			if err.Error()[len(err.Error())-3:] == "429" {
-				l.l.Info("rate limit exceeded, waiting 1 second", zap.String("address", address.String()))
+				l.logger.Info("rate limit exceeded, waiting 1 second", zap.String("address", address.String()))
 				time.Sleep(1 * time.Second)
 				continue
 			}
-			l.l.Info("error getting token", zap.String("address", address.String()))
-			return
+			return models.Token{}, err
 		}
-		if err = l.redisRepo.Store(token); err != nil {
-			l.l.Error("error storing token", zap.Error(err))
-			return
-		}
-		return
+		return token, nil
 	}
 }
 
-func (l Loader) getDiffAddresses() ([]eth.Address, error) {
+func (l L) storeToken(token models.Token) error {
+	return l.storageRepo.Store(token)
+}
+
+func (l L) getDiffAddresses() ([]eth.Address, error) {
 	allAddresses, err := l.tokensRepo.ListTokenAddresses()
 	if err != nil {
 		return nil, err
 	}
 
-	availableAddresses, _ := l.redisRepo.GetAllAddresses()
+	availableAddresses, _ := l.storageRepo.GetAllAddresses()
 
 	var diffAddresses []eth.Address
 	for _, address := range allAddresses {
@@ -63,27 +60,41 @@ func (l Loader) getDiffAddresses() ([]eth.Address, error) {
 	return diffAddresses, nil
 }
 
-func (l Loader) loadAllTokens() error {
+func (l L) loadAllTokens() error {
 	tokenAddresses, err := l.getDiffAddresses()
 	if err != nil {
 		return err
 	}
 
-	//semaphore := make(chan bool, runtime.NumCPU())
+	// NOTE: limits the number of workers to avoid rate limit errors
 	semaphore := make(chan bool, l.numWorkers)
 	for _, address := range tokenAddresses {
 		semaphore <- true
-		go l.loadToken(semaphore, address)
+		go func(address eth.Address) {
+			defer func() {
+				<-semaphore
+			}()
+			token, err := l.loadToken(address)
+			if err != nil {
+				l.logger.Info("error getting token", zap.String("address", address.String()))
+				return
+			}
+			err = l.storeToken(token)
+			if err != nil {
+				l.logger.Info("error storing token", zap.String("address", address.String()))
+				return
+			}
+		}(address)
 	}
 	return nil
 }
 
-func (l Loader) RunLoader() {
+func (l L) RunLoader() {
 	go func() {
 		for {
 			err := l.loadAllTokens()
 			if err != nil {
-				l.l.Error("error loading tokens", zap.Error(err))
+				l.logger.Error("error loading tokens", zap.Error(err))
 			}
 			if l.refetchDelayHours == 0 {
 				break

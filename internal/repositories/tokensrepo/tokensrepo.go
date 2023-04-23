@@ -10,12 +10,12 @@ import (
 )
 
 type TR struct {
-	l             *zap.Logger
+	logger        *zap.Logger
 	addressesFile string
 }
 
 func New(l *zap.Logger, addressesFile string) TR {
-	tr := TR{l: l, addressesFile: addressesFile}
+	tr := TR{logger: l, addressesFile: addressesFile}
 	return tr
 }
 

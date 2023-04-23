@@ -9,12 +9,12 @@ import (
 )
 
 type H struct {
-	svc service.Interface
-	l   *zap.Logger
+	svc    service.I
+	logger *zap.Logger
 }
 
-func New(l *zap.Logger, svc service.Interface) H {
-	return H{svc: svc, l: l}
+func New(l *zap.Logger, svc service.I) H {
+	return H{svc: svc, logger: l}
 }
 
 func (h H) Up(c *gin.Context) {

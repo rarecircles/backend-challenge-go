@@ -2,10 +2,10 @@ package service
 
 import "github.com/rarecircles/backend-challenge-go/internal/models"
 
-type Interface interface {
+type I interface {
 	Search(string) ([]models.Token, error)
 }
 
-type IRedisRepo interface {
+type iStorageRepo interface {
 	Search(key string) ([]models.Token, error)
 }
