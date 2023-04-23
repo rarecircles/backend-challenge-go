@@ -1,0 +1,15 @@
+version: '3'
+services:
+  redisearch:
+    image: redis/redis-stack-server:latest
+    ports:
+      - "6379:6379"
+  app:
+    build:
+      context: .
+    depends_on:
+      - redisearch
+    environment:
+      - CHALLENGE_REDIS_SEARCH_URL=redisearch:6379
+    ports:
+        - "8080:8080"
